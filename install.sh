@@ -64,10 +64,12 @@ main() {
   echo ""
   echo "archinit installed successfully!"
   echo ""
-  echo "Next steps:"
-  echo "  1. Open a new shell (or run: source ~/.archinit/shell/archinit.sh)"
-  echo "  2. Run: archinit        # opens the interactive TUI"
-  echo "     or:  archinit install # installs all default modules"
+
+  # Source the shell hook so archinit is available in the current shell,
+  # then launch it directly so the user can start right away.
+  # shellcheck source=/dev/null
+  source "${ARCHINIT_HOME}/shell/archinit.sh"
+  archinit
 }
 
 main "$@"
