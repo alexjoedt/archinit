@@ -9,7 +9,10 @@ _ARCHINIT_OS=1
 assert_arch() {
   local id
   # shellcheck source=/dev/null
-  id="$(. /etc/os-release 2>/dev/null && echo "${ID:-}" || true)"
+  id="$(
+    . /etc/os-release 2>/dev/null
+    echo "${ID:-}"
+  )"
   [[ $id == "arch" ]] || die "archinit requires Arch Linux (detected: '${id:-unknown}')"
 }
 

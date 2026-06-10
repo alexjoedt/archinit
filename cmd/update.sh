@@ -35,9 +35,12 @@ cmd_update() {
   for arg in "$@"; do
     case "$arg" in
       --no-sysupgrade) no_sysupgrade=1 ;;
-      --no-modules)    no_modules=1 ;;
-      --no-snapshot)   no_snapshot=1 ;;
-      --help|-h)       cmd_update_help; exit 0 ;;
+      --no-modules) no_modules=1 ;;
+      --no-snapshot) no_snapshot=1 ;;
+      --help | -h)
+        cmd_update_help
+        exit 0
+        ;;
       --*) ;;
     esac
   done

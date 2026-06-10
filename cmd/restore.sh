@@ -27,7 +27,10 @@ cmd_restore() {
 
   for arg in "$@"; do
     case "$arg" in
-      --help|-h) cmd_restore_help; exit 0 ;;
+      --help | -h)
+        cmd_restore_help
+        exit 0
+        ;;
       --*) ;;
       *) name="$arg" ;;
     esac

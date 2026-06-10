@@ -131,7 +131,7 @@ snapshot_native_packages() {
   latest="$(snapshot_latest)"
   snap_dir="${_SNAPSHOT_DIR}/${latest}"
   f="${snap_dir}/native.txt"
-  [[ -f $f ]] && grep -v '^\s*$' "$f" || true
+  if [[ -f $f ]]; then grep -v '^\s*$' "$f" || true; fi
 }
 
 # ---------------------------------------------------------------------------
@@ -143,5 +143,5 @@ snapshot_foreign_packages() {
   latest="$(snapshot_latest)"
   snap_dir="${_SNAPSHOT_DIR}/${latest}"
   f="${snap_dir}/foreign.txt"
-  [[ -f $f ]] && grep -v '^\s*$' "$f" || true
+  if [[ -f $f ]]; then grep -v '^\s*$' "$f" || true; fi
 }

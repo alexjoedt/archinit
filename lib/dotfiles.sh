@@ -123,7 +123,10 @@ _dman_apply() {
 _chezmoi_init() {
   local repo="$1"
   require_cmd chezmoi "chezmoi not found"
-  [[ -d "${HOME}/.local/share/chezmoi" ]] && { log_info "chezmoi: already initialized"; return 0; }
+  [[ -d "${HOME}/.local/share/chezmoi" ]] && {
+    log_info "chezmoi: already initialized"
+    return 0
+  }
   run chezmoi init "$repo"
 }
 
@@ -142,12 +145,18 @@ _chezmoi_apply() {
 _stow_init() {
   local repo="$1"
   require_cmd git "git not found"
-  [[ -d "${HOME}/.dotfiles" ]] && { log_info "stow: dotfiles dir already present"; return 0; }
+  [[ -d "${HOME}/.dotfiles" ]] && {
+    log_info "stow: dotfiles dir already present"
+    return 0
+  }
   run git clone "$repo" "${HOME}/.dotfiles"
 }
 
 _stow_apply() {
   require_cmd stow "stow not found"
-  [[ -n ${DRY_RUN:-} ]] && { log_info "[dry-run] would run: stow -d ~/.dotfiles -t ~ ."; return 0; }
+  [[ -n ${DRY_RUN:-} ]] && {
+    log_info "[dry-run] would run: stow -d ~/.dotfiles -t ~ ."
+    return 0
+  }
   (cd "${HOME}/.dotfiles" && run stow -t "${HOME}" .)
 }

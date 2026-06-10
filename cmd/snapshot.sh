@@ -52,7 +52,7 @@ cmd_snapshot() {
       echo "--- foreign (AUR) ---"
       cat "${dir}/foreign.txt" 2>/dev/null || echo "(empty)"
       ;;
-    --help|-h)
+    --help | -h)
       cmd_snapshot_help
       ;;
     *)

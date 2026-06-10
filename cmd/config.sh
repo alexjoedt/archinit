@@ -53,7 +53,7 @@ cmd_config() {
       k="${k%"${k##*[![:space:]]}"}"
       [[ -z $k ]] && continue
       printf '%s=%s\n' "$k" "$(config_get "$k")"
-    done < "$defaults"
+    done <"$defaults"
     return 0
   fi
 

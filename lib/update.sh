@@ -20,8 +20,8 @@ update_self() {
   fi
 
   # Check for local modifications — warn and abort update rather than clobber
-  if ! git -C "$repo_dir" diff --quiet 2>/dev/null || \
-     ! git -C "$repo_dir" diff --cached --quiet 2>/dev/null; then
+  if ! git -C "$repo_dir" diff --quiet 2>/dev/null ||
+    ! git -C "$repo_dir" diff --cached --quiet 2>/dev/null; then
     log_warn "archinit: local changes detected in ${repo_dir}; skipping self-update to avoid clobbering"
     log_warn "  Commit or stash your changes, then run 'archinit update' again."
     return 0

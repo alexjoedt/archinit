@@ -68,7 +68,7 @@ cmd_tui() {
 
   # selected is newline- or space-separated; convert to array
   local -a selected_arr
-  read -ra selected_arr <<< "$selected"
+  read -ra selected_arr <<<"$selected"
 
   run_modules "${selected_arr[@]}"
 }

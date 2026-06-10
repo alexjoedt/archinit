@@ -53,7 +53,10 @@ _all_module_names() {
 _module_requires() {
   local name="$1"
   local f
-  f="$(_find_module_file "$name")" || { echo ""; return 0; }
+  f="$(_find_module_file "$name")" || {
+    echo ""
+    return 0
+  }
   bash -c "
     ARCHINIT_HOME='${ARCHINIT_HOME}'
     source '${ARCHINIT_HOME}/lib/core.sh' 2>/dev/null || true
@@ -71,7 +74,7 @@ _module_requires() {
 _topo_sort() {
   local -a input=("$@")
   _TOPO_SORTED=()
-  local -A visited=()    # 0=unvisited, 1=in-progress, 2=done
+  local -A visited=() # 0=unvisited, 1=in-progress, 2=done
 
   _visit() {
     local node="$1"

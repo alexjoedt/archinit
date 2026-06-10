@@ -69,13 +69,31 @@ _VERB_ARGS=()
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --dry-run)   DRY_RUN=1; export DRY_RUN ;;
-    --verbose)   VERBOSE=1; export VERBOSE ;;
-    --quiet)     QUIET=1;   export QUIET ;;
-    --yes|-y)    ASSUME_YES=1; export ASSUME_YES ;;
-    --no-color)  NO_COLOR=1; export NO_COLOR ;;
-    --force)     FORCE=1; export FORCE ;;
-    -h|--help)
+    --dry-run)
+      DRY_RUN=1
+      export DRY_RUN
+      ;;
+    --verbose)
+      VERBOSE=1
+      export VERBOSE
+      ;;
+    --quiet)
+      QUIET=1
+      export QUIET
+      ;;
+    --yes | -y)
+      ASSUME_YES=1
+      export ASSUME_YES
+      ;;
+    --no-color)
+      NO_COLOR=1
+      export NO_COLOR
+      ;;
+    --force)
+      FORCE=1
+      export FORCE
+      ;;
+    -h | --help)
       # If a verb has already been parsed, defer --help to the subcommand
       if [[ -n $_VERB ]]; then
         _VERB_ARGS+=("$1")

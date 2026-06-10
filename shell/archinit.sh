@@ -37,10 +37,10 @@ _archinit_maybe_update() {
   if [[ -f $stamp ]]; then
     local mtime
     mtime="$(date -r "$stamp" +%s 2>/dev/null || stat -c %Y "$stamp" 2>/dev/null || echo "0")"
-    elapsed=$(( (now - mtime) / 3600 ))
+    elapsed=$(((now - mtime) / 3600))
   fi
 
-  if (( elapsed >= interval_hours )); then
+  if ((elapsed >= interval_hours)); then
     # Run update in background; never block the prompt
     local log_dir="${state_dir}/logs"
     mkdir -p "$log_dir" 2>/dev/null || true

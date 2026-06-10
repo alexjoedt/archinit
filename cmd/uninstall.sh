@@ -29,8 +29,11 @@ cmd_uninstall() {
 
   for arg in "$@"; do
     case "$arg" in
-      --purge)   purge=1 ;;
-      --help|-h) cmd_uninstall_help; exit 0 ;;
+      --purge) purge=1 ;;
+      --help | -h)
+        cmd_uninstall_help
+        exit 0
+        ;;
       --*) ;;
     esac
   done

@@ -34,9 +34,12 @@ cmd_install() {
   for arg in "$@"; do
     case "$arg" in
       --no-snapshot) no_snapshot=1 ;;
-      --help|-h)     cmd_install_help; exit 0 ;;
-      --*)           ;; # global flags already parsed
-      *)             modules+=("$arg") ;;
+      --help | -h)
+        cmd_install_help
+        exit 0
+        ;;
+      --*) ;; # global flags already parsed
+      *) modules+=("$arg") ;;
     esac
   done
 
@@ -45,7 +48,7 @@ cmd_install() {
     local default_modules
     default_modules="$(config_get DEFAULT_MODULES)"
     if [[ -n $default_modules ]]; then
-      read -ra modules <<< "$default_modules"
+      read -ra modules <<<"$default_modules"
     else
       modules=("all")
     fi

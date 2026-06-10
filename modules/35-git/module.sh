@@ -26,7 +26,7 @@ module_install() {
   local choice
   choice="$(ui_menu "Git Setup" \
     "identity" "Setup Git identity (name + email)" \
-    "skip"     "Skip Git setup")"
+    "skip" "Skip Git setup")"
 
   case "$choice" in
     skip)
@@ -57,16 +57,19 @@ _git_setup_identity() {
     read -r email
   fi
 
-  [[ -n $name && -n $email ]] || { log_warn "Name/email empty; skipping identity setup"; return 0; }
+  [[ -n $name && -n $email ]] || {
+    log_warn "Name/email empty; skipping identity setup"
+    return 0
+  }
   git_set_identity "$name" "$email"
 }
 
 _git_setup_auth() {
   local method
   method="$(ui_menu "Git Auth Method" \
-    "ssh"   "Use SSH key (recommended)" \
+    "ssh" "Use SSH key (recommended)" \
     "token" "Use HTTPS personal access token" \
-    "skip"  "Skip auth setup")"
+    "skip" "Skip auth setup")"
 
   case "$method" in
     ssh)
