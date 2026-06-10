@@ -130,11 +130,38 @@ pkg_install_list() {
     return 0
   fi
 
-  log_info "pkg: installing ${#pkgs[@]} ${class} package(s)"
+  # Separate already-installed from pending so the summary is accurate
+  local -a pending=() skipped=()
+  local p
+  for p in "${pkgs[@]}"; do
+    if pkg_is_installed "$p"; then
+      skipped+=("$p")
+    else
+      pending+=("$p")
+    fi
+  done
 
-  if [[ $class == "aur" ]]; then
-    pkg_install_aur "${pkgs[@]}"
-  else
-    pkg_install_official "${pkgs[@]}"
+  log_info "pkg: installing ${#pkgs[@]} ${class} package(s) (${#pending[@]} new, ${#skipped[@]} already installed)"
+
+  local rc=0
+  if [[ ${#pending[@]} -gt 0 ]]; then
+    if [[ $class == "aur" ]]; then
+      pkg_install_aur "${pending[@]}" || rc=$?
+    else
+      pkg_install_official "${pending[@]}" || rc=$?
+    fi
   fi
+
+  # Summary
+  echo ""
+  log_info "pkg: summary for '${class}'"
+  if [[ ${#skipped[@]} -gt 0 ]]; then
+    log_info "  already installed (${#skipped[@]}): ${skipped[*]}"
+  fi
+  if [[ ${#pending[@]} -gt 0 ]]; then
+    log_info "  newly installed  (${#pending[@]}): ${pending[*]}"
+  fi
+  echo ""
+
+  return $rc
 }
