@@ -5,6 +5,9 @@
 [[ -n ${_ARCHINIT_PKG:-} ]] && return 0
 _ARCHINIT_PKG=1
 
+# shellcheck source=/dev/null
+[[ -n ${_ARCHINIT_LOG:-} ]] || source "${ARCHINIT_HOME}/lib/log.sh"
+
 # ---------------------------------------------------------------------------
 # pkg_read_list FILE — print cleaned package names (strip comments & blanks)
 # ---------------------------------------------------------------------------
