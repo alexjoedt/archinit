@@ -9,6 +9,7 @@ set -euo pipefail
 IFS=$'\n\t'
 
 ARCHINIT_REPO="${ARCHINIT_REPO:-https://github.com/alexjoedt/archinit.git}"
+ARCHINIT_BRANCH="${ARCHINIT_BRANCH:-main}"
 ARCHINIT_HOME="${ARCHINIT_HOME:-$HOME/.archinit}"
 
 # ---------------------------------------------------------------------------
@@ -38,7 +39,7 @@ main() {
     git -C "${ARCHINIT_HOME}" pull --ff-only
   else
     echo "archinit: cloning to ${ARCHINIT_HOME}..."
-    git clone --depth=1 "${ARCHINIT_REPO}" "${ARCHINIT_HOME}"
+    git clone --depth=1 --branch "${ARCHINIT_BRANCH}" "${ARCHINIT_REPO}" "${ARCHINIT_HOME}"
   fi
 
   # Make entrypoint executable (absolute path post-clone)
