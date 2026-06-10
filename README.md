@@ -1,6 +1,6 @@
 # archinit
 
-An oh-my-zsh-style, self-installing, idempotent Arch Linux initialization tool.
+A self-installing, idempotent Arch Linux initialization tool.
 `install.sh` bootstraps into `~/.archinit`; the `archinit` command runs idempotent
 modules either via subcommands (CLI) or an interactive TUI.
 
