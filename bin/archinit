@@ -17,6 +17,25 @@ source "${ARCHINIT_HOME}/lib/core.sh"
 source "${ARCHINIT_HOME}/lib/log.sh"
 # shellcheck source=/dev/null
 source "${ARCHINIT_HOME}/lib/config.sh"
+# shellcheck source=/dev/null
+source "${ARCHINIT_HOME}/lib/os.sh"
+# shellcheck source=/dev/null
+source "${ARCHINIT_HOME}/lib/pkg.sh"
+
+# ---------------------------------------------------------------------------
+# One-time gum prompt (preferred TUI helper, optional)
+# ---------------------------------------------------------------------------
+if ! has_cmd gum; then
+  log_info "gum is the preferred TUI helper for archinit (optional, but recommended)."
+  printf 'Install gum now via pacman? [y/N] '
+  read -r _gum_answer
+  if [[ ${_gum_answer,,} == "y" || ${_gum_answer,,} == "yes" ]]; then
+    pkg_install_official gum
+  else
+    log_info "Skipping gum installation."
+  fi
+  unset _gum_answer
+fi
 
 # ---------------------------------------------------------------------------
 # Global flag defaults (already set in core.sh but explicit here)
