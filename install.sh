@@ -36,7 +36,9 @@ main() {
   # --- Clone or update ---
   if [[ -d "${ARCHINIT_HOME}/.git" ]]; then
     echo "archinit: updating existing clone at ${ARCHINIT_HOME}..."
-    git -C "${ARCHINIT_HOME}" pull --ff-only
+    git -C "${ARCHINIT_HOME}" fetch origin
+    git -C "${ARCHINIT_HOME}" checkout "${ARCHINIT_BRANCH}"
+    git -C "${ARCHINIT_HOME}" pull --ff-only origin "${ARCHINIT_BRANCH}"
   else
     echo "archinit: cloning to ${ARCHINIT_HOME}..."
     git clone --depth=1 --branch "${ARCHINIT_BRANCH}" "${ARCHINIT_REPO}" "${ARCHINIT_HOME}"
