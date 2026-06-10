@@ -15,17 +15,17 @@ ARCHINIT_HOME="${ARCHINIT_HOME:-$HOME/.archinit}"
 # ---------------------------------------------------------------------------
 main() {
   # --- OS check ---
-  if [[ -f /etc/os-release ]]; then
-    # shellcheck source=/dev/null
-    source /etc/os-release
-    if [[ ${ID:-} != "arch" ]]; then
-      echo "archinit: this installer is designed for Arch Linux (detected: ${ID:-unknown})" >&2
-      exit 1
-    fi
-  else
-    echo "archinit: cannot detect OS (/etc/os-release missing)" >&2
-    exit 1
-  fi
+  # if [[ -f /etc/os-release ]]; then
+  #   # shellcheck source=/dev/null
+  #   source /etc/os-release
+  #   if [[ ${ID:-} != "arch" ]]; then
+  #     echo "archinit: this installer is designed for Arch Linux (detected: ${ID:-unknown})" >&2
+  #     exit 1
+  #   fi
+  # else
+  #   echo "archinit: cannot detect OS (/etc/os-release missing)" >&2
+  #   exit 1
+  # fi
 
   # --- Ensure git ---
   if ! command -v git &>/dev/null; then
