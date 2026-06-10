@@ -64,12 +64,6 @@ main() {
   echo ""
   echo "archinit installed successfully!"
   echo ""
-
-  # Source the shell hook so archinit is available in the current shell,
-  # then launch it directly so the user can start right away.
-  # shellcheck source=/dev/null
-  source "${ARCHINIT_HOME}/shell/archinit.sh"
-  archinit
 }
 
 main "$@"
