@@ -21,6 +21,7 @@ teardown() {
   bash -c "
     ARCHINIT_HOME='${ARCHINIT_HOME}'
     source '${ARCHINIT_HOME}/lib/core.sh'
+    source '${ARCHINIT_HOME}/lib/log.sh'
     source '${ARCHINIT_HOME}/lib/fs.sh'
     ensure_dir '${target}'
   "
@@ -33,6 +34,7 @@ teardown() {
   bash -c "
     ARCHINIT_HOME='${ARCHINIT_HOME}'
     source '${ARCHINIT_HOME}/lib/core.sh'
+    source '${ARCHINIT_HOME}/lib/log.sh'
     source '${ARCHINIT_HOME}/lib/fs.sh'
     ensure_dir '${target}'
   "
@@ -49,6 +51,7 @@ teardown() {
   bash -c "
     ARCHINIT_HOME='${ARCHINIT_HOME}'
     source '${ARCHINIT_HOME}/lib/core.sh'
+    source '${ARCHINIT_HOME}/lib/log.sh'
     source '${ARCHINIT_HOME}/lib/fs.sh'
     backup '${target}'
   "
@@ -70,6 +73,7 @@ teardown() {
   bash -c "
     ARCHINIT_HOME='${ARCHINIT_HOME}'
     source '${ARCHINIT_HOME}/lib/core.sh'
+    source '${ARCHINIT_HOME}/lib/log.sh'
     source '${ARCHINIT_HOME}/lib/fs.sh'
     backup '${link}'
   "
@@ -89,6 +93,7 @@ teardown() {
   bash -c "
     ARCHINIT_HOME='${ARCHINIT_HOME}'
     source '${ARCHINIT_HOME}/lib/core.sh'
+    source '${ARCHINIT_HOME}/lib/log.sh'
     source '${ARCHINIT_HOME}/lib/fs.sh'
     symlink '${src}' '${dst}'
   "
@@ -107,6 +112,7 @@ teardown() {
   bash -c "
     ARCHINIT_HOME='${ARCHINIT_HOME}'
     source '${ARCHINIT_HOME}/lib/core.sh'
+    source '${ARCHINIT_HOME}/lib/log.sh'
     source '${ARCHINIT_HOME}/lib/fs.sh'
     symlink '${src}' '${dst}'
   "
@@ -127,6 +133,7 @@ teardown() {
   bash -c "
     ARCHINIT_HOME='${ARCHINIT_HOME}'
     source '${ARCHINIT_HOME}/lib/core.sh'
+    source '${ARCHINIT_HOME}/lib/log.sh'
     source '${ARCHINIT_HOME}/lib/fs.sh'
     symlink '${src}' '${dst}'
   "
