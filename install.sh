@@ -52,7 +52,7 @@ main() {
   if ! command -v gum &>/dev/null; then
     echo "archinit: gum is the preferred TUI helper for archinit (optional, but recommended)."
     printf "Install gum now via pacman? [y/N] "
-    read -r _gum_answer
+    read -r _gum_answer </dev/tty
     if [[ ${_gum_answer,,} == "y" || ${_gum_answer,,} == "yes" ]]; then
       sudo pacman -S --needed --noconfirm gum
     else
