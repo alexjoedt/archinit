@@ -48,7 +48,7 @@ cmd_install() {
     local default_modules
     default_modules="$(config_get DEFAULT_MODULES)"
     if [[ -n $default_modules ]]; then
-      read -ra modules <<<"$default_modules"
+      IFS=' ' read -ra modules <<<"$default_modules"
     else
       modules=("all")
     fi
