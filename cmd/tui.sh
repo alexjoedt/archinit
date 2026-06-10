@@ -80,5 +80,20 @@ cmd_tui() {
     done
   done <<<"$selected"
 
+  # Inform the user if any explicitly selected modules are already satisfied
+  local m module_file
+  for m in "${selected_arr[@]}"; do
+    module_file="$(_find_module_file "$m" 2>/dev/null || true)"
+    [[ -z $module_file ]] && continue
+    if bash -c "
+      ARCHINIT_HOME='${ARCHINIT_HOME}'
+      source '${ARCHINIT_HOME}/lib/core.sh' 2>/dev/null
+      source '${module_file}' 2>/dev/null
+      module_check
+    " &>/dev/null 2>&1; then
+      log_warn "Module '${m}' is already satisfied — use --force to re-run"
+    fi
+  done
+
   run_modules "${selected_arr[@]}"
 }
