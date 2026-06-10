@@ -19,8 +19,9 @@ EOF
 }
 
 cmd_tui() {
-  # Collect all module names and their descriptions; pre-select pending ones
-  local -a items=()
+  # Collect module names, descriptions, and pending state
+  local -a names_arr=()
+  local -a display_arr=()
   local -a pending=()
 
   local module_file name describe
@@ -39,7 +40,8 @@ cmd_tui() {
     " 2>/dev/null || true)"
     [[ -z $name ]] && continue
 
-    items+=("$name" "$describe")
+    names_arr+=("$name")
+    display_arr+=("${name} — ${describe}")
 
     if ! bash -c "
       ARCHINIT_HOME='${ARCHINIT_HOME}'
@@ -51,13 +53,13 @@ cmd_tui() {
     fi
   done < <(find "${ARCHINIT_HOME}/modules" -maxdepth 2 -name "module.sh" | sort)
 
-  if [[ ${#items[@]} -eq 0 ]]; then
+  if [[ ${#names_arr[@]} -eq 0 ]]; then
     log_error "No modules found in ${ARCHINIT_HOME}/modules"
     return 1
   fi
 
   local selected
-  selected="$(ui_choose_multi "Select modules to install (pending pre-selected)" "${items[@]}")"
+  selected="$(ui_choose_multi "Select modules to install (pending pre-selected)" "${display_arr[@]}")"
 
   if [[ -z $selected ]]; then
     log_info "No modules selected; exiting"
@@ -66,9 +68,17 @@ cmd_tui() {
 
   log_init
 
-  # selected is newline- or space-separated; convert to array
-  local -a selected_arr
-  read -ra selected_arr <<<"$selected"
+  # Map selected display strings back to module names
+  local -a selected_arr=()
+  local line i
+  while IFS= read -r line; do
+    for i in "${!display_arr[@]}"; do
+      if [[ "${display_arr[$i]}" == "$line" ]]; then
+        selected_arr+=("${names_arr[$i]}")
+        break
+      fi
+    done
+  done <<<"$selected"
 
   run_modules "${selected_arr[@]}"
 }
