@@ -48,6 +48,18 @@ main() {
   # Make entrypoint executable (absolute path post-clone)
   chmod +x "${ARCHINIT_HOME}/bin/archinit"
 
+  # --- Offer gum (preferred TUI helper, optional) ---
+  if ! command -v gum &>/dev/null; then
+    echo "archinit: gum is the preferred TUI helper for archinit (optional, but recommended)."
+    printf "Install gum now via pacman? [y/N] "
+    read -r _gum_answer
+    if [[ ${_gum_answer,,} == "y" || ${_gum_answer,,} == "yes" ]]; then
+      sudo pacman -S --needed --noconfirm gum
+    else
+      echo "archinit: skipping gum installation."
+    fi
+  fi
+
   # --- Add shell hook (idempotent: skip if already present) ---
   local hook_line="source \"\$HOME/.archinit/shell/archinit.sh\""
   local rc_file
