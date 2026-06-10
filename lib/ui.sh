@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
 # lib/ui.sh — TUI abstraction: gum -> whiptail -> dialog -> plain text
-# Requires: lib/core.sh, lib/log.sh sourced first.
+# Requires: lib/core.sh, lib/log.sh, lib/os.sh sourced first (or auto-sourced).
 
 [[ -n ${_ARCHINIT_UI:-} ]] && return 0
 _ARCHINIT_UI=1
+
+# shellcheck source=/dev/null
+[[ -n ${_ARCHINIT_OS:-} ]] || source "${ARCHINIT_HOME}/lib/os.sh"
 
 # ---------------------------------------------------------------------------
 # Backend detection (cached)
