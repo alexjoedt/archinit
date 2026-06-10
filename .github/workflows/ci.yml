@@ -1,0 +1,86 @@
+name: CI
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Lint: shellcheck + shfmt on Ubuntu
+  # ---------------------------------------------------------------------------
+  lint:
+    name: Lint (shellcheck + shfmt)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install shellcheck
+        run: sudo apt-get install -y shellcheck
+
+      - name: Install shfmt
+        run: |
+          curl -sSL https://github.com/mvdan/sh/releases/download/v3.8.0/shfmt_v3.8.0_linux_amd64 \
+            -o /usr/local/bin/shfmt
+          chmod +x /usr/local/bin/shfmt
+
+      - name: Run lint
+        run: bash tests/lint.sh
+
+  # ---------------------------------------------------------------------------
+  # Unit tests: bats-core on Ubuntu
+  # ---------------------------------------------------------------------------
+  bats:
+    name: Bats unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install bats-core
+        run: |
+          git clone --depth=1 https://github.com/bats-core/bats-core.git /tmp/bats
+          sudo /tmp/bats/install.sh /usr/local
+
+      - name: Run bats
+        run: bats tests/bats/
+
+  # ---------------------------------------------------------------------------
+  # Arch smoke: dry-run modules + doctor inside an Arch container
+  # ---------------------------------------------------------------------------
+  arch-smoke:
+    name: Arch smoke (dry-run)
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          pacman -Sy --noconfirm --needed git bash shellcheck
+
+      - name: Set up ARCHINIT_HOME
+        run: |
+          mkdir -p /root/.archinit
+          cp -r . /root/.archinit/
+          chmod +x /root/.archinit/bin/archinit
+
+      - name: Dry-run each module
+        run: |
+          for module in modules/*/module.sh; do
+            name="$(bash -c "
+              ARCHINIT_HOME='/root/.archinit'
+              source '/root/.archinit/lib/core.sh' 2>/dev/null || true
+              source '${module}' 2>/dev/null || true
+              module_name
+            " 2>/dev/null || true)"
+            echo "--- dry-run: ${name} ---"
+            ARCHINIT_HOME=/root/.archinit DRY_RUN=1 ASSUME_YES=1 \
+              /root/.archinit/bin/archinit install "$name" --dry-run --yes || true
+          done
+
+      - name: archinit doctor (read-only)
+        run: |
+          ARCHINIT_HOME=/root/.archinit \
+            /root/.archinit/bin/archinit doctor || true

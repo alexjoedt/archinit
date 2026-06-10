@@ -1,0 +1,68 @@
+# config/packages/desktop.txt — official desktop packages (Hyprland Wayland stack)
+# Format: one package per line; lines starting with # and blank lines are ignored.
+# Install with: pacman -S --needed $(archinit pkg_read_list desktop)
+# Requires: base packages installed first.
+# Note: audio assumed present from archinstall; display manager is sddm.
+
+# --- Hyprland core ---
+hyprland
+xdg-desktop-portal-hyprland
+xdg-desktop-portal-gtk
+
+# --- Wayland compatibility ---
+wayland
+wayland-utils
+qt5-wayland
+qt6-wayland
+xorg-xwayland
+
+# --- Bar / status ---
+waybar
+
+# --- Launcher / menus ---
+wofi
+
+# --- Notifications ---
+mako
+
+# --- Lock / idle ---
+hyprlock
+hypridle
+
+# --- Wallpaper ---
+swaybg
+
+# --- Screenshot ---
+grim
+slurp
+
+# --- Clipboard ---
+wl-clipboard
+
+# --- Terminal ---
+kitty
+
+# --- File manager ---
+thunar
+gvfs
+
+# --- Auth / polkit ---
+polkit-gnome
+
+# --- Display manager ---
+sddm
+
+# --- Network tray ---
+network-manager-applet
+
+# --- Audio control ---
+pavucontrol
+
+# --- Brightness ---
+brightnessctl
+
+# --- Fonts ---
+ttf-jetbrains-mono-nerd
+noto-fonts
+noto-fonts-emoji
+noto-fonts-cjk

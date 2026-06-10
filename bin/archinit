@@ -1,0 +1,137 @@
+#!/usr/bin/env bash
+# bin/archinit — CLI entrypoint and argument dispatcher
+
+set -euo pipefail
+IFS=$'\n\t'
+
+# ---------------------------------------------------------------------------
+# Resolve ARCHINIT_HOME from the script location (bin/ → parent)
+# ---------------------------------------------------------------------------
+_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ARCHINIT_HOME="${ARCHINIT_HOME:-$(dirname "$_SCRIPT_DIR")}"
+export ARCHINIT_HOME
+
+# shellcheck source=/dev/null
+source "${ARCHINIT_HOME}/lib/core.sh"
+# shellcheck source=/dev/null
+source "${ARCHINIT_HOME}/lib/log.sh"
+# shellcheck source=/dev/null
+source "${ARCHINIT_HOME}/lib/config.sh"
+
+# ---------------------------------------------------------------------------
+# Global flag defaults (already set in core.sh but explicit here)
+# ---------------------------------------------------------------------------
+DRY_RUN="${DRY_RUN:-}"
+ASSUME_YES="${ASSUME_YES:-}"
+VERBOSE="${VERBOSE:-}"
+QUIET="${QUIET:-}"
+NO_COLOR="${NO_COLOR:-}"
+FORCE="${FORCE:-}"
+export DRY_RUN ASSUME_YES VERBOSE QUIET NO_COLOR FORCE
+
+# ---------------------------------------------------------------------------
+# Top-level help
+# ---------------------------------------------------------------------------
+_archinit_help() {
+  cat <<'EOF'
+Usage: archinit [GLOBAL_FLAGS] <command> [args...]
+
+Commands:
+  install   [module...]   Install modules (default: all configured)
+  update                  Self-update archinit and optionally re-run modules
+  doctor                  Read-only health/drift report
+  list                    List modules with class and status
+  snapshot  [create|list|show] Manage package snapshots
+  restore   [NAME]        Reinstall packages from a snapshot
+  config    [key [value]] View or set configuration keys
+  tui                     Interactive module selector (default when no args)
+  version                 Print version information
+  uninstall               Remove archinit (keep installed packages)
+
+Global flags:
+  --dry-run               Print commands without executing
+  --verbose               Enable debug output
+  --quiet                 Suppress informational output
+  --yes                   Assume yes on all prompts
+  --no-color              Disable colored output
+  --force                 Force re-run even if module already satisfied
+  -h, --help              Show this help
+
+Run 'archinit <command> --help' for command-specific usage.
+EOF
+}
+
+# ---------------------------------------------------------------------------
+# Parse global flags
+# ---------------------------------------------------------------------------
+_VERB=""
+_VERB_ARGS=()
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --dry-run)   DRY_RUN=1; export DRY_RUN ;;
+    --verbose)   VERBOSE=1; export VERBOSE ;;
+    --quiet)     QUIET=1;   export QUIET ;;
+    --yes|-y)    ASSUME_YES=1; export ASSUME_YES ;;
+    --no-color)  NO_COLOR=1; export NO_COLOR ;;
+    --force)     FORCE=1; export FORCE ;;
+    -h|--help)
+      # If a verb has already been parsed, defer --help to the subcommand
+      if [[ -n $_VERB ]]; then
+        _VERB_ARGS+=("$1")
+      else
+        _archinit_help
+        exit 0
+      fi
+      ;;
+    --)
+      shift
+      _VERB_ARGS+=("$@")
+      break
+      ;;
+    -*)
+      echo "archinit: unknown flag: $1" >&2
+      _archinit_help >&2
+      exit 1
+      ;;
+    *)
+      if [[ -z $_VERB ]]; then
+        _VERB="$1"
+      else
+        _VERB_ARGS+=("$1")
+      fi
+      ;;
+  esac
+  shift
+done
+
+# Default verb when no args given
+[[ -z $_VERB ]] && _VERB="tui"
+
+# ---------------------------------------------------------------------------
+# Dispatch
+# ---------------------------------------------------------------------------
+_cmd_file="${ARCHINIT_HOME}/cmd/${_VERB}.sh"
+
+if [[ ! -f $_cmd_file ]]; then
+  echo "archinit: unknown command: ${_VERB}" >&2
+  _archinit_help >&2
+  exit 1
+fi
+
+# shellcheck source=/dev/null
+source "$_cmd_file"
+
+# Per-subcommand --help
+for arg in "${_VERB_ARGS[@]+"${_VERB_ARGS[@]}"}"; do
+  if [[ $arg == "--help" || $arg == "-h" ]]; then
+    if declare -f "cmd_${_VERB}_help" &>/dev/null; then
+      "cmd_${_VERB}_help"
+    else
+      echo "No detailed help available for '${_VERB}'"
+    fi
+    exit 0
+  fi
+done
+
+"cmd_${_VERB}" "${_VERB_ARGS[@]+"${_VERB_ARGS[@]}"}"

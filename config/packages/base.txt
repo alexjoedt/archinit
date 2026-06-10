@@ -1,0 +1,45 @@
+# config/packages/base.txt — official base packages installed via pacman
+# Format: one package per line; lines starting with # and blank lines are ignored.
+# Install with: pacman -S --needed $(archinit pkg_read_list base)
+
+# --- Build tools ---
+base-devel
+
+# --- Core utilities ---
+git
+curl
+wget
+unzip
+rsync
+man-db
+man-pages
+
+# --- Shell & terminal ---
+zsh
+zsh-completions
+zsh-syntax-highlighting
+zsh-autosuggestions
+tmux
+
+# --- Editor ---
+neovim
+
+# --- Modern CLI replacements ---
+ripgrep
+fd
+fzf
+bat
+eza
+jq
+htop
+btop
+
+# --- Networking ---
+openssh
+nmap
+
+# --- Fonts ---
+ttf-dejavu
+
+# --- Misc ---
+reflector
