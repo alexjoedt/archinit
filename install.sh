@@ -40,6 +40,7 @@ main() {
     git -C "${ARCHINIT_HOME}" checkout "${ARCHINIT_BRANCH}"
     git -C "${ARCHINIT_HOME}" pull --ff-only origin "${ARCHINIT_BRANCH}"
   else
+    echo "archinit: using branch '${ARCHINIT_BRANCH}' from ${ARCHINIT_REPO}"
     echo "archinit: cloning to ${ARCHINIT_HOME}..."
     git clone --depth=1 --branch "${ARCHINIT_BRANCH}" "${ARCHINIT_REPO}" "${ARCHINIT_HOME}"
   fi
