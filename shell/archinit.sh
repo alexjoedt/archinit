@@ -41,14 +41,15 @@ _archinit_maybe_update() {
   fi
 
   if ((elapsed >= interval_hours)); then
-    # Run update in background; never block the prompt
+    # Run update in background; never block the prompt.
+    # Double-subshell: the inner job is never tracked by the interactive shell,
+    # so no "[N] PID" or "[N]+ exit" job-control messages appear.
     local log_dir="${state_dir}/logs"
     mkdir -p "$log_dir" 2>/dev/null || true
-    (
+    ( (
       "${archinit_home}/bin/archinit" update --no-modules --no-snapshot \
         >>"${log_dir}/autoupdate.log" 2>&1
-    ) &
-    disown $! 2>/dev/null || true
+    ) & )
   fi
 }
 
