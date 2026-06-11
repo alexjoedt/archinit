@@ -41,5 +41,3 @@ nmap
 # --- Fonts ---
 ttf-dejavu
 
-# --- Misc ---
-reflector

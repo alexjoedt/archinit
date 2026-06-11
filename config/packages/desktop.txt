@@ -16,15 +16,6 @@ qt5-wayland
 qt6-wayland
 xorg-xwayland
 
-# --- Bar / status ---
-waybar
-
-# --- Launcher / menus ---
-wofi
-
-# --- Notifications ---
-mako
-
 # --- Lock / idle ---
 hyprlock
 hypridle
@@ -39,8 +30,6 @@ slurp
 # --- Clipboard ---
 wl-clipboard
 
-# --- Terminal ---
-kitty
 
 # --- File manager ---
 thunar
