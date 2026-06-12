@@ -20,6 +20,7 @@ zsh-completions
 zsh-syntax-highlighting
 zsh-autosuggestions
 tmux
+gum
 
 # --- Editor ---
 neovim

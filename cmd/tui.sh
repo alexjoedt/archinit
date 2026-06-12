@@ -6,6 +6,8 @@
 # shellcheck source=/dev/null
 [[ -n ${_ARCHINIT_UI:-} ]] || source "${ARCHINIT_HOME}/lib/ui.sh"
 # shellcheck source=/dev/null
+[[ -n ${_ARCHINIT_PKG:-} ]] || source "${ARCHINIT_HOME}/lib/pkg.sh"
+# shellcheck source=/dev/null
 [[ -n ${_ARCHINIT_INSTALL:-} ]] || source "${ARCHINIT_HOME}/lib/install.sh"
 
 cmd_tui_help() {
@@ -19,6 +21,16 @@ EOF
 }
 
 cmd_tui() {
+  # Offer gum if no capable TUI backend is available
+  if ! has_cmd gum && ! has_cmd whiptail && ! has_cmd dialog; then
+    log_info "gum is the preferred TUI helper for archinit (optional, but recommended)."
+    if ui_confirm "Install gum now via pacman?"; then
+      pkg_install_official gum
+    else
+      log_info "Continuing with plain text prompts."
+    fi
+  fi
+
   # Collect module names, descriptions, and pending state
   local -a names_arr=()
   local -a display_arr=()

@@ -50,7 +50,11 @@ ui_confirm() {
       dialog --yesno "$msg" 8 60
       ;;
     *)
-      # Plain text fallback
+      # Plain text fallback — hang-safe: if no TTY, treat as 'no'
+      if [[ ! -t 0 ]]; then
+        log_warn "ui_confirm: no TTY available — treating as 'no': ${msg}"
+        return 1
+      fi
       local answer
       printf '%s [y/N] ' "$msg"
       read -r answer
@@ -86,7 +90,11 @@ ui_menu() {
       echo "${items[$((choice - 1))]}"
       ;;
     *)
-      # Plain text fallback
+      # Plain text fallback — hang-safe: if no TTY, return error
+      if [[ ! -t 0 ]]; then
+        log_warn "ui_menu: no TTY available — cannot prompt for '${title}'"
+        return 1
+      fi
       local i=1 item
       echo "$title"
       for item in "${items[@]}"; do
@@ -128,15 +136,19 @@ ui_choose_multi() {
       printf '%s\n' "${selected[@]}"
       ;;
     *)
-      # Plain text fallback
+      # Plain text fallback — hang-safe: if no TTY, return nothing
+      if [[ ! -t 0 ]]; then
+        log_warn "ui_choose_multi: no TTY available — cannot prompt for '${title}'"
+        return 1
+      fi
       local i=1 item
       echo "$title"
       for item in "${items[@]}"; do
         printf '  %d) %s\n' "$i" "$item"
         ((i++))
       done
-      printf 'Select (space-separated numbers): '
       local input
+      printf 'Select (space-separated numbers): '
       read -r input
       local num
       for num in $input; do
