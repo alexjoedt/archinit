@@ -1,27 +1,89 @@
-# config/packages/desktop.txt — official desktop packages (Hyprland Wayland stack)
-# Format: one package per line; lines starting with # and blank lines are ignored.
-# Install with: pacman -S --needed $(archinit pkg_read_list desktop)
-# Requires: base packages installed first.
-# Note: audio assumed present from archinstall; display manager is sddm.
+# config/packages/desktop.txt — official desktop packages (Hyprland/Wayland stack)
+# One package per line; # and blank lines ignored.
+
+# --- Security / keyring ---
+gnome-keyring
+libsecret
+seahorse
 
 # --- Hyprland core ---
 hyprland
+hyprlock
+hypridle
+hyprsunset
+hyprpaper
+xdg-desktop-portal
 xdg-desktop-portal-hyprland
 xdg-desktop-portal-gtk
 
-# --- Wayland compatibility ---
+# --- Wayland / XDG ---
 wayland
+wayland-protocols
 wayland-utils
-qt5-wayland
-qt6-wayland
 xorg-xwayland
 
-# --- Lock / idle ---
-hyprlock
-hypridle
+# --- Audio (pipewire stack) ---
+pipewire
+libpipewire
+pipewire-pulse
+pipewire-alsa
+wireplumber
+alsa-utils
+libpulse
+sndio
+playerctl
+brightnessctl
+bluez
+bluez-utils
 
-# --- Wallpaper ---
-swaybg
+# --- Qt ---
+qt5-wayland
+qt5-imageformats
+qt5-graphicaleffects
+qt6-base
+qt6-multimedia
+qt6-declarative
+qt6-quick3d
+qt6-shadertools
+qt6-tools
+qt6-wayland
+qt6-svg
+
+# --- GTK / UI libraries ---
+gtk3
+gtk4
+gtk4-layer-shell
+gtkmm3
+gtksourceview5
+cairo
+gobject-introspection
+libgirepository
+libappindicator-gtk3
+libdbusmenu-gtk3
+libsigc++
+poppler-glib
+
+# --- System libraries ---
+protobuf
+jsoncpp
+fmt
+chrono-date
+spdlog
+libnl
+libmpdclient
+libevdev
+libxkbcommon
+upower
+libnotify
+libqalculate
+unixodbc
+systemd-libs
+lm_sensors
+procps-ng
+util-linux
+glib2-devel
+fftw
+aubio
 
 # --- Screenshot ---
 grim
@@ -29,29 +91,46 @@ slurp
 
 # --- Clipboard ---
 wl-clipboard
+cliphist
 
-
-# --- File manager ---
-thunar
+# --- File management ---
+nautilus
 gvfs
+sushi
+nautilus-image-converter
+nautilus-share
+udisks2
+file-roller
 
 # --- Auth / polkit ---
 polkit-gnome
 
-# --- Display manager ---
-sddm
-
-# --- Network tray ---
-network-manager-applet
-
-# --- Audio control ---
-pavucontrol
-
-# --- Brightness ---
-brightnessctl
+# --- Theming / icons ---
+gnome-themes-extra
+papirus-icon-theme
+hicolor-icon-theme
+nwg-look
+swww
+inter-font
 
 # --- Fonts ---
+ttf-meslo-nerd
+ttf-jetbrains-mono
 ttf-jetbrains-mono-nerd
+ttf-fira-code
+ttf-nerd-fonts-symbols
 noto-fonts
 noto-fonts-emoji
 noto-fonts-cjk
+ttf-font-awesome-4
+ttf-meslo-nerd-font-powerlevel10k
+
+# --- Networking / desktop integration ---
+networkmanager
+pacman-contrib
+desktop-file-utils
+shared-mime-info
+
+# --- Applications ---
+bitwarden
+obsidian

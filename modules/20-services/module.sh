@@ -12,9 +12,15 @@ module_describe() { echo "Enable common system services (NetworkManager, sshd, p
 module_requires() { echo "base"; }
 
 # Services to enable at system level
-_SYSTEM_SERVICES=(NetworkManager)
+_SYSTEM_SERVICES=(NetworkManager sshd.service)
 # Services to enable at user level
-_USER_SERVICES=(pipewire wireplumber pipewire-pulse)
+_USER_SERVICES=(
+  pipewire
+  wireplumber
+  pipewire-pulse
+  xdg-desktop-portal.service
+  xdg-desktop-portal-hyprland.service
+)
 
 module_check() {
   for unit in "${_SYSTEM_SERVICES[@]}"; do
