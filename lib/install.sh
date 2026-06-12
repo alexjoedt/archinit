@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-# lib/install.sh — shared module runner (topological sort + install loop)
+# lib/install.sh — module runner
+# Module names are derived from the directory name by stripping the NN- prefix.
+# Execution order is determined by the numeric prefix (sort order).
 # Sourcing-safe: double-source guard at top.
 
 [[ -n ${_ARCHINIT_INSTALL:-} ]] && return 0
@@ -16,113 +18,64 @@ _ARCHINIT_INSTALL=1
 # Module discovery helpers
 # ---------------------------------------------------------------------------
 
-# _find_module_file NAME — print path to module.sh for a given module name
+# _module_name_from_path PATH — modules/35-git/module.sh → git
+_module_name_from_path() {
+  local dir; dir="$(dirname "$1")"
+  local base; base="${dir##*/}"
+  echo "${base#*-}"
+}
+
+# _find_module_file NAME — path to module.sh, no subshells
 _find_module_file() {
-  local name="$1"
-  local f
+  local name="$1" f
   for f in "${ARCHINIT_HOME}/modules"/*/module.sh; do
-    local n
-    n="$(bash -c "
-      ARCHINIT_HOME='${ARCHINIT_HOME}'
-      source '${ARCHINIT_HOME}/lib/core.sh' 2>/dev/null || true
-      source '${f}' 2>/dev/null || true
-      module_name
-    " 2>/dev/null || true)"
-    if [[ $n == "$name" ]]; then
-      echo "$f"
-      return 0
-    fi
+    [[ "$(_module_name_from_path "$f")" == "$name" ]] && echo "$f" && return 0
   done
   return 1
 }
 
-# _all_module_names — list all module names in numeric directory order
-_all_module_names() {
-  local f
-  while IFS= read -r f; do
-    bash -c "
-      ARCHINIT_HOME='${ARCHINIT_HOME}'
-      source '${ARCHINIT_HOME}/lib/core.sh' 2>/dev/null || true
-      source '${f}' 2>/dev/null || true
-      module_name
-    " 2>/dev/null || true
-  done < <(find "${ARCHINIT_HOME}/modules" -maxdepth 2 -name "module.sh" | sort)
-}
-
-# _module_requires NAME — print space-separated dependency names for a module
-_module_requires() {
-  local name="$1"
-  local f
-  f="$(_find_module_file "$name")" || {
-    echo ""
-    return 0
-  }
-  bash -c "
-    ARCHINIT_HOME='${ARCHINIT_HOME}'
-    source '${ARCHINIT_HOME}/lib/core.sh' 2>/dev/null || true
-    source '${f}' 2>/dev/null || true
-    module_requires
-  " 2>/dev/null || true
+# _all_module_files — module.sh paths in numeric directory order
+_all_module_files() {
+  find "${ARCHINIT_HOME}/modules" -maxdepth 2 -name "module.sh" | sort
 }
 
 # ---------------------------------------------------------------------------
-# Topological sort (DFS, cycle detection)
-# ---------------------------------------------------------------------------
-
-# _topo_sort NAMES... — print module names in dependency-first order
-# Sets global array _TOPO_SORTED; returns non-zero if cycle detected.
-_topo_sort() {
-  local -a input=("$@")
-  _TOPO_SORTED=()
-  local -A visited=() # 0=unvisited, 1=in-progress, 2=done
-
-  _visit() {
-    local node="$1"
-    case "${visited[$node]:-0}" in
-      2) return 0 ;;
-      1) die "Module dependency cycle detected at: ${node}" ;;
-    esac
-    visited[$node]=1
-
-    local deps dep
-    deps="$(_module_requires "$node")"
-    for dep in $deps; do
-      _visit "$dep"
-    done
-
-    visited[$node]=2
-    _TOPO_SORTED+=("$node")
-  }
-
-  local m
-  for m in "${input[@]}"; do
-    _visit "$m"
-  done
-}
-
-# ---------------------------------------------------------------------------
-# run_modules NAMES... — resolve deps and install in order
+# run_modules NAMES... — install modules in NN- prefix order
 # ---------------------------------------------------------------------------
 run_modules() {
   local -a requested=("$@")
+  local -a module_files=()
 
-  # If "all" is the sole argument, expand to all modules
   if [[ ${#requested[@]} -eq 1 && ${requested[0]} == "all" ]]; then
-    mapfile -t requested < <(_all_module_names)
+    mapfile -t module_files < <(_all_module_files)
+  else
+    # Resolve requested names to paths, preserving sort order
+    local -a all_files; mapfile -t all_files < <(_all_module_files)
+    local f name req
+    for f in "${all_files[@]}"; do
+      name="$(_module_name_from_path "$f")"
+      for req in "${requested[@]}"; do
+        if [[ $name == "$req" ]]; then
+          module_files+=("$f")
+          break
+        fi
+      done
+    done
+    # Warn about any requested names that were not found
+    for req in "${requested[@]}"; do
+      local found=0
+      for f in "${module_files[@]+"${module_files[@]}"}"; do
+        [[ "$(_module_name_from_path "$f")" == "$req" ]] && found=1 && break
+      done
+      ((found == 0)) && log_error "Module not found: ${req}"
+    done
   fi
-
-  local -a _TOPO_SORTED=()
-  _topo_sort "${requested[@]}"
 
   local failed=0
 
-  for module_name in "${_TOPO_SORTED[@]}"; do
-    local module_file
-    if ! module_file="$(_find_module_file "$module_name")"; then
-      log_error "Module not found: ${module_name}"
-      ((failed++)) || true
-      continue
-    fi
+  for module_file in "${module_files[@]+"${module_files[@]}"}"; do
+    local module_name
+    module_name="$(_module_name_from_path "$module_file")"
 
     log_info "Module: ${module_name}"
 
