@@ -18,6 +18,28 @@ pkg_read_list() {
 }
 
 # ---------------------------------------------------------------------------
+# pkg_list_satisfied CLASS — return 0 if every package in config/packages/<CLASS>.txt
+# is installed. Read-only; safe to call from module_check.
+# ---------------------------------------------------------------------------
+pkg_list_satisfied() {
+  local class="$1"
+  local list_file="${ARCHINIT_HOME}/config/packages/${class}.txt"
+  [[ -f $list_file ]] || return 1
+
+  local -a pkgs
+  mapfile -t pkgs < <(pkg_read_list "$list_file")
+
+  # An empty list is trivially satisfied
+  [[ ${#pkgs[@]} -eq 0 ]] && return 0
+
+  local p
+  for p in "${pkgs[@]}"; do
+    pkg_is_installed "$p" || return 1
+  done
+  return 0
+}
+
+# ---------------------------------------------------------------------------
 # _pkg_install_one_official PKG — install a single official package; return exit code
 # ---------------------------------------------------------------------------
 _pkg_install_one_official() {

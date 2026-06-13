@@ -96,12 +96,13 @@ and blank lines are ignored.
 | services   | service | Enable NetworkManager, pipewire, etc.            |
 | desktop    | desktop | Hyprland Wayland stack + sddm display manager   |
 | git        | base    | Git identity, SSH/token auth, optional gh CLI   |
-| dev        | aur     | AUR dev tools + dotfiles via dman               |
+| dev        | aur     | AUR dev tools and applications                  |
+| dotfiles   | dotfiles | Apply dotfiles via dman                         |
 
 Modules are idempotent: `module_check` gates re-runs. Use `--force` to re-run.
 
 Module dependencies are resolved topologically via `module_requires` — running
-`archinit install dev` automatically runs `aur-helper` and `git` first.
+`archinit install dotfiles` automatically runs `aur-helper`, `git` and `dev` first.
 
 ## Snapshots
 
