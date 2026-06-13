@@ -1,44 +1,167 @@
-# config/packages/base.txt — official base packages installed via pacman
-# Format: one package per line; lines starting with # and blank lines are ignored.
-# Install with: pacman -S --needed $(archinit pkg_read_list base)
-
-# --- Build tools ---
+# Base & Build Tools
 base-devel
-
-# --- Core utilities ---
 git
 curl
 wget
 unzip
-rsync
+zip
 man-db
 man-pages
+clang
+pkg-config
+llvm
+ninja
+meson
+cmake
+scdoc
+wayland-protocols
+glib2-devel
 
-# --- Shell & terminal ---
+# Security
+gnome-keyring
+libsecret
+seahorse
+openssh
+
+# Shell & Terminal
 zsh
+tmux
+zoxide
+fzf
+direnv
+
+# CLI Utilities
+ripgrep
+fd
+bat
+eza
+btop
+github-cli
+dust
+jq
+gum
+socat
+starship
 zsh-completions
 zsh-syntax-highlighting
 zsh-autosuggestions
-tmux
-gum
 
-# --- Editor ---
+# Development
 neovim
+lazygit
+go-task
 
-# --- Modern CLI replacements ---
-ripgrep
-fd
-fzf
-bat
-eza
-jq
-htop
-btop
+# GTK / UI Libraries
+gtk3
+gtk4
+gtk4-layer-shell
+gtkmm3
+gtksourceview5
+cairo
+gobject-introspection
+libgirepository
+libappindicator-gtk3
+libdbusmenu-gtk3
+libsigc++
+poppler-glib
 
-# --- Networking ---
-openssh
-nmap
+# Audio / Media
+pipewire
+libpipewire
+pipewire-pulse
+pipewire-alsa
+wireplumber
+alsa-utils
+libpulse
+sndio
+fftw
+aubio
+playerctl
+brightnessctl
+bluez
+bluez-utils
 
-# --- Fonts ---
-ttf-dejavu
+# System Libraries
+protobuf
+jsoncpp
+fmt
+chrono-date
+spdlog
+wayland
+libnl
+libmpdclient
+libevdev
+libxkbcommon
+upower
+libnotify
+libqalculate
+unixodbc
+systemd-libs
+lm_sensors
+procps-ng
+util-linux
 
+# Qt
+qt5-imageformats
+qt5-graphicaleffects
+qt6-base
+qt6-multimedia
+qt6-declarative
+qt6-quick3d
+qt6-shadertools
+qt6-tools
+qt6-wayland
+qt6-svg
+
+# Wayland / Desktop Integration
+xdg-desktop-portal
+xdg-desktop-portal-hyprland
+networkmanager
+# mako # i use quickshell as notification service
+wl-clipboard
+cliphist
+pacman-contrib
+desktop-file-utils
+shared-mime-info
+hyprpaper
+hyprsunset
+hyprlock
+hypridle
+hyprpicker
+hyprshutdown
+grim
+slurp
+
+# File Management
+nautilus
+gvfs
+sushi
+nautilus-image-converter
+nautilus-share
+udisks2
+file-roller
+
+# Theming & Icons
+gnome-themes-extra
+papirus-icon-theme
+hicolor-icon-theme
+nwg-look
+swww
+inter-font
+
+# Fonts
+ttf-meslo-nerd
+ttf-jetbrains-mono
+ttf-jetbrains-mono-nerd
+ttf-fira-code
+ttf-nerd-fonts-symbols
+noto-fonts
+noto-fonts-emoji
+noto-fonts-cjk
+ttf-font-awesome-4 
+ttf-meslo-nerd-font-powerlevel10k
+
+# Applications
+bitwarden
+obsidian
+#quickshell # i currently use AUR package

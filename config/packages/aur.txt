@@ -1,22 +1,29 @@
-# config/packages/aur.txt — AUR packages installed via yay
-# Format: one package per line; lines starting with # and blank lines are ignored.
-# NOTE: yay (or another AUR helper) must be installed first (module 10-aur-helper).
-# Install with: yay -S --needed $(archinit pkg_read_list aur)
+# ── Terminal ──────────────────────────────────────────────────────────────────
+wezterm-git
 
-# --- Dotfile manager ---
-dman
+cava
 
-# --- Editors / IDEs ---
-visual-studio-code-bin
+# App launcher
+elephant
+elephant-desktopapplications
+elephant-runner
+elephant-files
+elephant-calc
+elephant-websearch
+elephant-clipboard
+elephant-symbols
+elephant-windows
+walker
 
-# --- Browsers ---
-brave-bin
+# File manager theming
+adwaita-qt
+papirus-folders
 
-# --- Media ---
-spotify
+# Icon themes
+tela-icon-theme-git
+tela-circle-icon-theme-git
+yaru-icon-theme
+fluent-icon-theme-git
+nordzy-icon-theme
 
-# --- Screenshot (Hyprland-aware) ---
-hyprshot
-
-# --- Logout menu ---
-wlogout
+quickshell-git
