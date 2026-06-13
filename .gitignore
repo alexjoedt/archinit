@@ -18,3 +18,8 @@ dist/
 # Dotfiles
 .env
 .envrc
+
+# archinit machine-local config & secrets (never commit)
+config.local
+secrets.local
+*.local
