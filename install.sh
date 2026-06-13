@@ -48,10 +48,18 @@ _seed_config() {
 
   local git_name git_email dotfiles_repo git_auth_method
 
+  # Detect existing git identity in ~/.gitconfig — skip prompts if present
+  local existing_git_name existing_git_email
+  existing_git_name="$(git config --global user.name 2>/dev/null || true)"
+  existing_git_email="$(git config --global user.email 2>/dev/null || true)"
+
   # GIT_USER_NAME
   if [[ -n ${GIT_USER_NAME:-} ]]; then
     git_name="$GIT_USER_NAME"
     printf 'archinit: GIT_USER_NAME="%s" (from environment)\n' "$git_name"
+  elif [[ -n $existing_git_name ]]; then
+    git_name="$existing_git_name"
+    printf 'archinit: git user.name already set to "%s" — skipping\n' "$git_name"
   else
     printf 'Git user name       [Enter to skip]: ' >/dev/tty
     read -r git_name </dev/tty || true
@@ -61,6 +69,9 @@ _seed_config() {
   if [[ -n ${GIT_USER_EMAIL:-} ]]; then
     git_email="$GIT_USER_EMAIL"
     printf 'archinit: GIT_USER_EMAIL="%s" (from environment)\n' "$git_email"
+  elif [[ -n $existing_git_email ]]; then
+    git_email="$existing_git_email"
+    printf 'archinit: git user.email already set to "%s" — skipping\n' "$git_email"
   else
     printf 'Git user email      [Enter to skip]: ' >/dev/tty
     read -r git_email </dev/tty || true
@@ -79,6 +90,11 @@ _seed_config() {
   if [[ -n ${GIT_AUTH_METHOD:-} ]]; then
     git_auth_method="$GIT_AUTH_METHOD"
     printf 'archinit: GIT_AUTH_METHOD="%s" (from environment)\n' "$git_auth_method"
+  elif [[ -s ${HOME}/.git-credentials ]] \
+    || [[ -n "$(git config --global credential.helper 2>/dev/null || true)" ]] \
+    || [[ -f ${HOME}/.ssh/id_ed25519 ]] || [[ -f ${HOME}/.ssh/id_rsa ]]; then
+    git_auth_method="skip"
+    printf 'archinit: git auth already configured — skipping\n'
   else
     printf 'Git auth method (ssh/token/skip) [Enter for ssh]: ' >/dev/tty
     read -r git_auth_method </dev/tty || true
