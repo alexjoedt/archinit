@@ -131,6 +131,7 @@ hyprpicker
 hyprshutdown
 grim
 slurp
+satty
 
 # File Management
 nautilus
