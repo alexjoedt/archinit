@@ -22,6 +22,31 @@ git_is_configured() {
   [[ -n $name && -n $email ]]
 }
 
+# git_has_credentials — returns 0 if ~/.git-credentials exists and is non-empty
+git_has_credentials() {
+  [[ -s "${HOME}/.git-credentials" ]]
+}
+
+# git_auth_configured — returns 0 if some form of git auth is already set up:
+#   stored HTTPS credentials, a configured credential.helper, or an SSH key.
+git_auth_configured() {
+  # HTTPS: stored credentials file
+  if git_has_credentials; then
+    return 0
+  fi
+  # HTTPS: credential.helper configured globally
+  local helper
+  helper="$(git config --global credential.helper 2>/dev/null || true)"
+  if [[ -n $helper ]]; then
+    return 0
+  fi
+  # SSH: a usable private key present
+  if [[ -f "${HOME}/.ssh/id_ed25519" || -f "${HOME}/.ssh/id_rsa" ]]; then
+    return 0
+  fi
+  return 1
+}
+
 # git_set_identity NAME EMAIL — set global git identity (idempotent: only sets if empty or --force)
 git_set_identity() {
   local name="${1:?git_set_identity: NAME required}"

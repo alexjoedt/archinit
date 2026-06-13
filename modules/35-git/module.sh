@@ -48,6 +48,15 @@ module_install() {
 }
 
 _git_setup_identity() {
+  # Skip if a git identity is already present in ~/.gitconfig (unless --force)
+  if git_is_configured && [[ -z ${FORCE:-} ]]; then
+    local cur_name cur_email
+    cur_name="$(git config --global user.name 2>/dev/null || true)"
+    cur_email="$(git config --global user.email 2>/dev/null || true)"
+    log_info "git identity already configured (${cur_name} <${cur_email}>) — skipping (use --force to override)"
+    return 0
+  fi
+
   local name email
 
   # Pre-populate from config
@@ -71,6 +80,12 @@ _git_setup_identity() {
 }
 
 _git_setup_auth() {
+  # Skip if auth is already configured (~/.git-credentials, credential.helper, or SSH key)
+  if git_auth_configured && [[ -z ${FORCE:-} ]]; then
+    log_info "git auth already configured — skipping (use --force to override)"
+    return 0
+  fi
+
   local method
   method="$(ui_menu "Git Auth Method" \
     "ssh" "Use SSH key (recommended)" \
@@ -126,6 +141,12 @@ _git_install_unattended() {
   fi
 
   git_set_identity "$name" "$email"
+
+  # Skip auth if already configured (~/.git-credentials, credential.helper, or SSH key)
+  if git_auth_configured && [[ -z ${FORCE:-} ]]; then
+    log_info "git: auth already configured — skipping"
+    return 0
+  fi
 
   local method
   method="$(config_get GIT_AUTH_METHOD)"
