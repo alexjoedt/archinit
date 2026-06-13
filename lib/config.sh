@@ -58,14 +58,14 @@ config_set() {
   fi
 
   if [[ -f $file ]] && grep -qE "^${key}=" "$file"; then
-    # Update existing line (BSD + GNU sed compatible via temp file)
+    # Remove the existing line, then re-append the new value
     local tmp
     tmp="$(mktemp)"
-    sed "s|^${key}=.*|${key}=${value}|" "$file" >"$tmp" && mv "$tmp" "$file"
-  else
-    # Append new key
-    printf '%s=%s\n' "$key" "$value" >>"$file"
+    grep -vE "^${key}=" "$file" >"$tmp" || true
+    mv "$tmp" "$file"
   fi
+  # %q makes the value safe to re-source as bash (handles spaces, quotes, $, etc.)
+  printf '%s=%q\n' "$key" "$value" >>"$file"
 }
 
 # config_unset KEY [FILE] — remove a key from config.local

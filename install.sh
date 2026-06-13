@@ -29,7 +29,8 @@ _write_config() {
   tmp="$(mktemp)"
   grep -v "^${key}=" "$config_file" >"$tmp" || true
   mv "$tmp" "$config_file"
-  printf '%s=%s\n' "$key" "$value" >>"$config_file"
+  # %q makes the value safe to re-source as bash (handles spaces, quotes, $, etc.)
+  printf '%s=%q\n' "$key" "$value" >>"$config_file"
 }
 
 # ---------------------------------------------------------------------------
