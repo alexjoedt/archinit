@@ -82,6 +82,9 @@ _seed_config() {
   if [[ -n ${DOTFILES_REPO:-} ]]; then
     dotfiles_repo="$DOTFILES_REPO"
     printf 'archinit: DOTFILES_REPO="%s" (from environment)\n' "$dotfiles_repo"
+  elif [[ -f ${XDG_CONFIG_HOME:-$HOME/.config}/dman/dman.json ]] \
+    && [[ -d ${XDG_DATA_HOME:-$HOME/.local/share}/dman ]]; then
+    printf 'archinit: dotfiles (dman) already set up — skipping\n'
   else
     printf 'Dotfiles repo URL   [Enter to skip]: ' >/dev/tty
     read -r dotfiles_repo </dev/tty || true
