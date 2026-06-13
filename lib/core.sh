@@ -43,6 +43,27 @@ _archinit_err_trap() {
 trap '_archinit_err_trap' ERR
 
 # ---------------------------------------------------------------------------
+# Interrupt handling — Ctrl-C (SIGINT) / SIGTERM must stop the script entirely,
+# including any background helpers (e.g. the sudo keepalive loop).
+# We disarm ERR (so the abort isn't reported as a command failure), run cleanup,
+# then re-raise the signal so the exit status is the conventional 128+signo.
+# ---------------------------------------------------------------------------
+_archinit_interrupt() {
+  local sig="$1"
+  # Restore default handlers to prevent re-entry / recursion
+  trap - INT TERM ERR
+  _archinit_cleanup_sudo
+  printf '\n' >&2
+  echo "archinit: aborted (received SIG${sig})" >&2
+  # Re-raise on self so the shell terminates with status 128+signo
+  kill -s "$sig" "$$"
+  # Fallback if the signal is somehow swallowed
+  exit 130
+}
+trap '_archinit_interrupt INT' INT
+trap '_archinit_interrupt TERM' TERM
+
+# ---------------------------------------------------------------------------
 # Core helpers
 # ---------------------------------------------------------------------------
 
@@ -96,6 +117,8 @@ sudo_keepalive() {
   sudo -v
   # Background loop: refresh every 50 s (sudo timeout is typically 300 s)
   (
+    # Inherit no traps: a signal should just terminate this helper
+    trap - INT TERM ERR EXIT
     while true; do
       sleep 50
       sudo -v
