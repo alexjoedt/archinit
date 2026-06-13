@@ -47,7 +47,7 @@ _seed_config() {
   printf '\n%s\n' "archinit: Optional setup — press Enter to skip any prompt."
   printf '%s\n\n' "archinit: Values are saved to ${ARCHINIT_HOME}/config.local"
 
-  local git_name git_email dotfiles_repo git_auth_method
+  local git_name="" git_email="" dotfiles_repo="" git_auth_method=""
 
   # Detect existing git identity in ~/.gitconfig — skip prompts if present
   local existing_git_name existing_git_email
