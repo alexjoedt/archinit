@@ -158,8 +158,6 @@ ttf-nerd-fonts-symbols
 noto-fonts
 noto-fonts-emoji
 noto-fonts-cjk
-ttf-font-awesome-4 
-ttf-meslo-nerd-font-powerlevel10k
 
 # Applications
 bitwarden

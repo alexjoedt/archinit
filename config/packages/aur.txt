@@ -25,5 +25,7 @@ tela-circle-icon-theme-git
 yaru-icon-theme
 fluent-icon-theme-git
 nordzy-icon-theme
-
 quickshell-git
+
+ttf-meslo-nerd-font-powerlevel10k
+ttf-font-awesome-4
