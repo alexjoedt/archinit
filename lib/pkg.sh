@@ -137,7 +137,9 @@ pkg_install_aur() {
 
 # ---------------------------------------------------------------------------
 # pkg_install_list CLASS — install all packages from config/packages/<CLASS>.txt
-# CLASS: base | desktop | aur
+# CLASS: base | desktop | aur | <name>-aur
+# Any class named "aur" or ending in "-aur" is installed via the AUR helper;
+# all other classes are installed from the official repositories.
 # ---------------------------------------------------------------------------
 pkg_install_list() {
   local class="$1"
@@ -167,7 +169,7 @@ pkg_install_list() {
 
   local rc=0
   if [[ ${#pending[@]} -gt 0 ]]; then
-    if [[ $class == "aur" ]]; then
+    if [[ $class == "aur" || $class == *-aur ]]; then
       pkg_install_aur "${pending[@]}" || rc=$?
     else
       pkg_install_official "${pending[@]}" || rc=$?

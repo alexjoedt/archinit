@@ -63,13 +63,15 @@ archinit/
 │   ├── snapshot.sh  restore.sh  config.sh  uninstall.sh
 ├── modules/                # idempotent units, numbered
 │   ├── 00-base/     10-aur-helper/  20-services/
-│   ├── 30-desktop/  35-git/         40-dev/
+│   ├── 30-desktop/  32-shell/       35-git/    40-dev/
 ├── config/
 │   ├── defaults.conf
 │   └── packages/
-│       ├── base.txt        # official base packages
-│       ├── desktop.txt     # Hyprland Wayland stack
-│       └── aur.txt         # AUR packages (requires yay)
+│       ├── base.txt              # official base packages
+│       ├── desktop.txt           # Hyprland Wayland stack
+│       ├── aur.txt               # AUR packages (requires yay)
+│       ├── shell-custom-aur.txt  # custom Quickshell shell (AUR)
+│       └── shell-noctalia-aur.txt # Noctalia shell v5 (AUR)
 ├── shell/archinit.sh       # rc hook: PATH + throttled auto-update
 └── tests/
     ├── lint.sh             # shellcheck + shfmt
@@ -78,14 +80,34 @@ archinit/
 
 ## Package Classes
 
-| Class   | Source         | Installer              | List file                    |
-|---------|----------------|------------------------|------------------------------|
-| base    | official repos | `pacman -S --needed`   | `config/packages/base.txt`   |
-| desktop | official repos | `pacman -S --needed`   | `config/packages/desktop.txt`|
-| aur     | AUR            | `yay -S --needed`      | `config/packages/aur.txt`    |
+| Class      | Source         | Installer              | List file                             |
+|------------|----------------|------------------------|---------------------------------------|
+| base       | official repos | `pacman -S --needed`   | `config/packages/base.txt`            |
+| desktop    | official repos | `pacman -S --needed`   | `config/packages/desktop.txt`         |
+| aur        | AUR            | `yay -S --needed`      | `config/packages/aur.txt`             |
+| `<name>-aur` | AUR          | `yay -S --needed`      | e.g. `config/packages/shell-custom-aur.txt` |
 
 Edit the list files to customize packages. One package per line; `#` comments
-and blank lines are ignored.
+and blank lines are ignored. Any list whose class is `aur` or ends in `-aur` is
+installed through the AUR helper; all others use the official repositories.
+
+## Desktop Shell
+
+The `shell` module installs a swappable desktop shell layer on top of the
+Hyprland desktop, selected by the `DESKTOP_SHELL` config key:
+
+| Value      | Stack                                                   |
+|------------|---------------------------------------------------------|
+| `custom`   | Quickshell + helper tools (notifications, cava, etc.)   |
+| `noctalia` | [Noctalia shell v5](https://docs.noctalia.dev/v5/)      |
+
+Each shell ships its own dedicated package list, so the two never conflict.
+Switch shells with:
+
+```bash
+archinit config DESKTOP_SHELL noctalia
+archinit install shell --force
+```
 
 ## Modules
 
@@ -95,6 +117,7 @@ and blank lines are ignored.
 | aur-helper | base    | Bootstrap yay from AUR source                   |
 | services   | service | Enable NetworkManager, pipewire, etc.            |
 | desktop    | desktop | Hyprland Wayland stack + sddm display manager   |
+| shell      | desktop | Desktop shell layer (custom Quickshell or Noctalia) |
 | git        | base    | Git identity, SSH/token auth, optional gh CLI   |
 | dev        | aur     | AUR dev tools and applications                  |
 | dotfiles   | dotfiles | Apply dotfiles via dman                         |

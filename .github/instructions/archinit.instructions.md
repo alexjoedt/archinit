@@ -114,5 +114,12 @@ bats tests/bats/
 - `config/packages/base.txt` — official-repo base packages
 - `config/packages/desktop.txt` — Hyprland/Wayland stack
 - `config/packages/aur.txt` — AUR packages
+- `config/packages/shell-<name>-aur.txt` — per-shell AUR packages (e.g.
+  `shell-custom-aur.txt`, `shell-noctalia-aur.txt`), installed by the `shell`
+  module based on the `DESKTOP_SHELL` config key
 
-One package per line; `#` lines and blank lines are ignored. Use `pkg_read_list` to consume them.
+One package per line; `#` lines and blank lines are ignored. Use `pkg_read_list`
+to consume them. Any class named `aur` or ending in `-aur` is installed via the
+AUR helper; every other class installs from the official repositories. Keep
+mutually-exclusive stacks (e.g. competing desktop shells) in dedicated lists so
+they never get pulled in together.
