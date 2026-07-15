@@ -1,0 +1,166 @@
+# Base & Build Tools
+base-devel
+git
+curl
+wget
+unzip
+zip
+man-db
+man-pages
+clang
+pkg-config
+llvm
+ninja
+meson
+cmake
+scdoc
+wayland-protocols
+glib2-devel
+
+# Security
+gnome-keyring
+libsecret
+seahorse
+openssh
+
+# Shell & Terminal
+zsh
+tmux
+zoxide
+fzf
+direnv
+
+# CLI Utilities
+ripgrep
+fd
+bat
+eza
+btop
+github-cli
+dust
+jq
+gum
+socat
+starship
+zsh-completions
+zsh-syntax-highlighting
+zsh-autosuggestions
+
+# Development
+neovim
+lazygit
+go-task
+
+# GTK / UI Libraries
+gtk3
+gtk4
+gtk4-layer-shell
+gtkmm3
+gtksourceview5
+cairo
+gobject-introspection
+libgirepository
+libappindicator-gtk3
+libdbusmenu-gtk3
+libsigc++
+poppler-glib
+
+# Audio / Media
+pipewire
+libpipewire
+pipewire-pulse
+pipewire-alsa
+wireplumber
+alsa-utils
+libpulse
+sndio
+fftw
+aubio
+playerctl
+brightnessctl
+bluez
+bluez-utils
+
+# System Libraries
+protobuf
+jsoncpp
+fmt
+chrono-date
+spdlog
+wayland
+libnl
+libmpdclient
+libevdev
+libxkbcommon
+upower
+libnotify
+libqalculate
+unixodbc
+systemd-libs
+lm_sensors
+procps-ng
+util-linux
+
+# Qt
+qt5-imageformats
+qt5-graphicaleffects
+qt6-base
+qt6-multimedia
+qt6-declarative
+qt6-quick3d
+qt6-shadertools
+qt6-tools
+qt6-wayland
+qt6-svg
+
+# Wayland / Desktop Integration
+xdg-desktop-portal
+xdg-desktop-portal-hyprland
+networkmanager
+# mako # i use quickshell as notification service
+wl-clipboard
+cliphist
+pacman-contrib
+desktop-file-utils
+shared-mime-info
+hyprpaper
+hyprsunset
+hyprlock
+hypridle
+hyprpicker
+hyprshutdown
+grim
+slurp
+satty
+
+# File Management
+nautilus
+gvfs
+sushi
+nautilus-image-converter
+nautilus-share
+udisks2
+file-roller
+
+# Theming & Icons
+gnome-themes-extra
+papirus-icon-theme
+hicolor-icon-theme
+nwg-look
+swww
+inter-font
+
+# Fonts
+ttf-meslo-nerd
+ttf-jetbrains-mono
+ttf-jetbrains-mono-nerd
+ttf-fira-code
+ttf-nerd-fonts-symbols
+noto-fonts
+noto-fonts-emoji
+noto-fonts-cjk
+
+# Applications
+bitwarden
+obsidian
+#quickshell # i currently use AUR package

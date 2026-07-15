@@ -13,9 +13,13 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
-bin/
 dist/
 
 # Dotfiles
 .env
 .envrc
+
+# archinit machine-local config & secrets (never commit)
+config.local
+secrets.local
+*.local

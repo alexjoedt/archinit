@@ -1,0 +1,7 @@
+# config/packages/shell-noctalia-aur.txt — AUR packages for the Noctalia shell v5
+# Installed by the 'shell' module only when DESKTOP_SHELL=noctalia.
+# noctalia-git pulls all runtime dependencies automatically, so this list is
+# intentionally minimal. See https://docs.noctalia.dev/v5/getting-started/installation/
+# One package per line; # and blank lines ignored.
+
+noctalia-git
