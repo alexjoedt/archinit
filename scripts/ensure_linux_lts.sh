@@ -76,6 +76,19 @@ running_kernel_is_lts() {
   [[ "$(uname -r)" == *-lts* ]]
 }
 
+# is_running_in_container — return 0 if running inside a container/chroot.
+# Containers never boot a kernel directly: kernel packages typically don't
+# get a real /boot/vmlinuz-* extracted and no bootloader is ever installed,
+# so the kernel-artifact and bootloader checks below would otherwise raise
+# false-alarm warnings for something this script has no business "fixing".
+is_running_in_container() {
+  [[ -f /run/.containerenv || -f /.dockerenv ]] && return 0
+  if command -v systemd-detect-virt >/dev/null 2>&1; then
+    systemd-detect-virt --container --quiet && return 0
+  fi
+  return 1
+}
+
 mkinitcpio_preset_file() {
   printf '%s\n' "/etc/mkinitcpio.d/linux-lts.preset"
 }
@@ -138,6 +151,11 @@ find_uki_lts_file() {
 # pacman kernel-install hook, this just reports whether it worked.
 verify_lts_kernel_artifact() {
   local preset_file uki_path uki_file
+
+  if is_running_in_container; then
+    log_info "Running in a container/chroot; skipping kernel artifact verification (no real boot partition expected)"
+    return 0
+  fi
 
   preset_file="$(mkinitcpio_preset_file)"
   if [[ ! -f $preset_file ]]; then
@@ -436,6 +454,11 @@ configure_bootloader_defaults() {
   local found=false
   local ok=false
 
+  if is_running_in_container; then
+    log_info "Running in a container/chroot; skipping bootloader alignment (no bootloader expected)"
+    return 0
+  fi
+
   # /boot/loader/entries may not exist on a pure-UKI systemd-boot setup (no
   # classic Type #1 entries at all), so also treat loader.conf or a populated
   # ESP /EFI/Linux as evidence that systemd-boot is in use.
@@ -482,6 +505,9 @@ rebuild_initramfs_if_needed() {
 }
 
 print_final_status() {
+  local artifact_status="${1:-0}"
+  local bootloader_status="${2:-0}"
+
   if running_kernel_is_lts; then
     log_ok "Running kernel is already linux-lts"
   else
@@ -494,6 +520,11 @@ print_final_status() {
     else
       log_warn "Changes were applied. Reboot to start linux-lts: sudo reboot"
     fi
+    return
+  fi
+
+  if [[ $artifact_status -ne 0 || $bootloader_status -ne 0 ]]; then
+    log_warn "No changes were made, but verification above reported problems; system may not be fully compliant"
     return
   fi
 
@@ -536,7 +567,7 @@ main() {
     log_info "Skipping bootloader default alignment by request"
   fi
 
-  print_final_status
+  print_final_status "$artifact_status" "$bootloader_status"
 
   if [[ $bootloader_status -ne 0 || $artifact_status -ne 0 ]]; then
     log_warn "Completed with warnings; review messages above"
