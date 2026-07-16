@@ -3,8 +3,7 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-AUR_PACKAGES_FILE="${SCRIPT_DIR}/config/packages/aur.txt"
+AUR_PACKAGES_FILE="aur.txt"
 
 log_info() { printf '[INFO] %s\n' "$*"; }
 log_ok() { printf '[ OK ] %s\n' "$*"; }
