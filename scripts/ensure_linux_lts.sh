@@ -76,6 +76,99 @@ running_kernel_is_lts() {
   [[ "$(uname -r)" == *-lts* ]]
 }
 
+mkinitcpio_preset_file() {
+  printf '%s\n' "/etc/mkinitcpio.d/linux-lts.preset"
+}
+
+# preset_default_uki_path PRESET_FILE — print the path configured via
+# `default_uki=` in a mkinitcpio preset, or nothing if the preset is missing
+# or uses the traditional vmlinuz+initramfs layout (`default_image=`)
+# instead. Presence of an uncommented `default_uki=` line is what
+# distinguishes a Unified Kernel Image (UKI) build from a classic one.
+preset_default_uki_path() {
+  local preset_file="${1:?preset file required}"
+  local line path
+
+  [[ -f $preset_file ]] || return 0
+
+  line="$(grep -E '^default_uki=' "$preset_file" || true)"
+  [[ -n $line ]] || return 0
+
+  path="${line#default_uki=}"
+  path="${path%%#*}"
+  path="${path%\"}"
+  path="${path#\"}"
+  path="${path%\'}"
+  path="${path#\'}"
+  printf '%s\n' "$path"
+}
+
+# find_uki_lts_file [DECLARED_PATH] — resolve the on-disk UKI file for
+# linux-lts. Prefers DECLARED_PATH (taken from the preset) if it exists;
+# preset files are shell-sourced by mkinitcpio and may reference variables a
+# plain text parse cannot resolve, so this falls back to scanning the ESP's
+# /EFI/Linux directory for a plausibly named *.efi file.
+find_uki_lts_file() {
+  local declared="${1:-}"
+  local esp_dir="/boot/EFI/Linux"
+  local file base
+
+  if [[ -n $declared && -f $declared ]]; then
+    printf '%s\n' "$declared"
+    return 0
+  fi
+
+  [[ -d $esp_dir ]] || return 1
+
+  for file in "$esp_dir"/*.efi; do
+    [[ -f $file ]] || continue
+    base="$(basename "$file")"
+    if [[ ${base,,} == *lts* ]]; then
+      printf '%s\n' "$file"
+      return 0
+    fi
+  done
+
+  return 1
+}
+
+# verify_lts_kernel_artifact — confirm mkinitcpio actually produced a bootable
+# linux-lts image, whether that's a classic vmlinuz+initramfs pair or a UKI.
+# Diagnostic only: building is handled by rebuild_initramfs_if_needed / the
+# pacman kernel-install hook, this just reports whether it worked.
+verify_lts_kernel_artifact() {
+  local preset_file uki_path uki_file
+
+  preset_file="$(mkinitcpio_preset_file)"
+  if [[ ! -f $preset_file ]]; then
+    log_warn "mkinitcpio preset not found: ${preset_file} (linux-lts install may be incomplete)"
+    return 1
+  fi
+
+  uki_path="$(preset_default_uki_path "$preset_file")"
+
+  if [[ -n $uki_path ]]; then
+    if uki_file="$(find_uki_lts_file "$uki_path")"; then
+      log_ok "linux-lts UKI present: ${uki_file}"
+      return 0
+    fi
+    log_warn "linux-lts.preset declares a UKI (${uki_path}) but it was not found; check 'sudo mkinitcpio -p linux-lts' output for errors"
+    return 1
+  fi
+
+  if [[ ! -f /boot/vmlinuz-linux-lts ]]; then
+    log_warn "linux-lts kernel image not found at /boot/vmlinuz-linux-lts"
+    return 1
+  fi
+  if [[ ! -f /boot/initramfs-linux-lts.img ]]; then
+    log_warn "linux-lts initramfs not found at /boot/initramfs-linux-lts.img"
+    return 1
+  fi
+
+  log_ok "linux-lts kernel image and initramfs present"
+  return 0
+}
+
 parse_args() {
   while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -266,15 +359,26 @@ ensure_grub_default_saved_mode() {
 }
 
 configure_systemd_boot_default() {
-  local entry
+  local entry uki_path uki_file
 
-  if ! entry="$(find_systemd_boot_lts_entry)"; then
-    log_warn "systemd-boot detected but no linux-lts entry found"
-    return 1
+  if entry="$(find_systemd_boot_lts_entry)"; then
+    set_systemd_boot_default "$entry"
+    return 0
   fi
 
-  set_systemd_boot_default "$entry"
-  return 0
+  # No classic loader entry — linux-lts may be built as a Unified Kernel
+  # Image instead. UKIs dropped into /EFI/Linux are auto-discovered by
+  # systemd-boot as Type #2 entries whose id is just the file's basename, so
+  # the same loader.conf `default` mechanism applies.
+  uki_path="$(preset_default_uki_path "$(mkinitcpio_preset_file)")"
+  if uki_file="$(find_uki_lts_file "$uki_path")"; then
+    log_info "systemd-boot: linux-lts is a UKI, using $(basename "$uki_file") as the boot entry"
+    set_systemd_boot_default "$(basename "$uki_file")"
+    return 0
+  fi
+
+  log_warn "systemd-boot detected but no linux-lts entry found (checked classic loader entries and UKI)"
+  return 1
 }
 
 configure_grub_default() {
@@ -288,7 +392,13 @@ configure_grub_default() {
 
   lts_title="$(find_grub_lts_title "$grub_cfg")"
   if [[ -z $lts_title ]]; then
-    log_warn "GRUB config does not contain a linux-lts menu entry"
+    local uki_path uki_file
+    uki_path="$(preset_default_uki_path "$(mkinitcpio_preset_file)")"
+    if uki_file="$(find_uki_lts_file "$uki_path")"; then
+      log_warn "linux-lts is built as a Unified Kernel Image ($(basename "$uki_file")); GRUB does not auto-generate a menu entry for UKIs, configure GRUB manually if you need it as the default"
+    else
+      log_warn "GRUB config does not contain a linux-lts menu entry"
+    fi
     return 1
   fi
 
@@ -326,7 +436,10 @@ configure_bootloader_defaults() {
   local found=false
   local ok=false
 
-  if [[ -d /boot/loader/entries ]]; then
+  # /boot/loader/entries may not exist on a pure-UKI systemd-boot setup (no
+  # classic Type #1 entries at all), so also treat loader.conf or a populated
+  # ESP /EFI/Linux as evidence that systemd-boot is in use.
+  if [[ -d /boot/loader/entries || -f /boot/loader/loader.conf || -d /boot/EFI/Linux ]]; then
     found=true
     if configure_systemd_boot_default; then
       ok=true
@@ -389,6 +502,7 @@ print_final_status() {
 
 main() {
   local bootloader_status=0
+  local artifact_status=0
 
   parse_args "$@"
 
@@ -412,6 +526,8 @@ main() {
   ensure_packages
   rebuild_initramfs_if_needed
 
+  verify_lts_kernel_artifact || artifact_status=1
+
   if ! $SKIP_BOOTLOADER; then
     if ! configure_bootloader_defaults; then
       bootloader_status=1
@@ -422,8 +538,8 @@ main() {
 
   print_final_status
 
-  if [[ $bootloader_status -ne 0 ]]; then
-    log_warn "Completed with warnings while adjusting boot defaults"
+  if [[ $bootloader_status -ne 0 || $artifact_status -ne 0 ]]; then
+    log_warn "Completed with warnings; review messages above"
   fi
 
   if ! $NO_REBOOT && ! $ASSUME_YES && [[ -t 0 ]] && [[ -t 1 ]]; then
