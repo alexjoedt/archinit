@@ -10,6 +10,7 @@ DRY_RUN=false
 
 CHANGED_PACKAGES=false
 CHANGED_BOOTLOADER=false
+CHANGED_PRESET=false
 
 log_info() { printf '[INFO] %s\n' "$*"; }
 log_ok() { printf '[ OK ] %s\n' "$*"; }
@@ -26,7 +27,10 @@ usage() {
 Usage: ensure_linux_lts.sh [options]
 
 Ensure linux-lts is installed and configured as the default boot target when
-supported bootloader files are detected.
+supported bootloader files are detected. On systemd-boot/UKI setups, also
+diagnoses and fixes /etc/mkinitcpio.d/linux-lts.preset when it is missing or
+not configured to build a Unified Kernel Image, mirroring whatever the
+mainline linux.preset already does.
 
 Options:
   --yes              Fully non-interactive automation; also suppresses the
@@ -93,6 +97,51 @@ mkinitcpio_preset_file() {
   printf '%s\n' "/etc/mkinitcpio.d/linux-lts.preset"
 }
 
+mainline_preset_file() {
+  printf '%s\n' "/etc/mkinitcpio.d/linux.preset"
+}
+
+# preset_get_value PRESET_FILE VAR — print the value assigned to an
+# uncommented `VAR=` line in a mkinitcpio preset (quotes stripped), or
+# nothing if VAR is not set. Same lightweight text parse as
+# preset_default_uki_path, generalized to arbitrary preset variables.
+preset_get_value() {
+  local preset_file="${1:?preset file required}"
+  local var="${2:?variable name required}"
+  local line val
+
+  [[ -f $preset_file ]] || return 1
+
+  line="$(grep -E "^${var}=" "$preset_file" || true)"
+  [[ -n $line ]] || return 1
+
+  val="${line#"${var}"=}"
+  val="${val%%#*}"
+  val="${val%\"}"
+  val="${val#\"}"
+  val="${val%\'}"
+  val="${val#\'}"
+  printf '%s\n' "$val"
+}
+
+# derive_lts_uki_path MAINLINE_UKI_PATH — turn a mainline UKI path (e.g.
+# /boot/EFI/Linux/arch-linux.efi) into the analogous linux-lts path
+# (/boot/EFI/Linux/arch-linux-lts.efi) by inserting a '-lts' suffix before
+# the .efi extension, preserving directory and naming scheme.
+derive_lts_uki_path() {
+  local path="${1:?uki path required}"
+  local dir base
+
+  dir="$(dirname "$path")"
+  base="$(basename "$path")"
+
+  if [[ $base == *.efi ]]; then
+    printf '%s/%s-lts.efi\n' "$dir" "${base%.efi}"
+  else
+    printf '%s/%s-lts\n' "$dir" "$base"
+  fi
+}
+
 # preset_default_uki_path PRESET_FILE — print the path configured via
 # `default_uki=` in a mkinitcpio preset, or nothing if the preset is missing
 # or uses the traditional vmlinuz+initramfs layout (`default_image=`)
@@ -143,6 +192,102 @@ find_uki_lts_file() {
   done
 
   return 1
+}
+
+# ensure_lts_preset — diagnose and, if necessary, fix
+# /etc/mkinitcpio.d/linux-lts.preset so it builds a Unified Kernel Image.
+#
+# Root cause this addresses: pacman ships linux-lts.preset with the
+# traditional default_image= layout. If the mainline kernel's preset was
+# hand-edited for UKI (per the Arch wiki systemd-boot UKI setup) *after*
+# that, linux-lts never gets the same treatment — it either predates the
+# switch to UKI or was freshly (re)installed from the package's template.
+# Either way mkinitcpio has nothing telling it to emit an .efi for -lts, so
+# no /boot/EFI/Linux/arch-linux-lts.efi is ever produced. This mirrors
+# whatever default_uki/options the mainline preset already uses.
+ensure_lts_preset() {
+  local mainline_preset lts_preset
+  local mainline_uki mainline_default_options mainline_fallback_uki mainline_fallback_options
+  local lts_uki lts_fallback_uki current_uki
+  local tmp
+
+  if is_running_in_container; then
+    log_info "Running in a container/chroot; skipping linux-lts.preset UKI configuration"
+    return 0
+  fi
+
+  mainline_preset="$(mainline_preset_file)"
+  lts_preset="$(mkinitcpio_preset_file)"
+
+  if [[ ! -f $mainline_preset ]]; then
+    log_warn "Mainline preset not found (${mainline_preset}); cannot derive UKI settings for linux-lts"
+    return 1
+  fi
+
+  mainline_uki="$(preset_default_uki_path "$mainline_preset")"
+  if [[ -z $mainline_uki ]]; then
+    log_info "Mainline kernel is not configured for UKI (no default_uki in ${mainline_preset}); nothing to mirror for linux-lts"
+    return 0
+  fi
+  log_info "Mainline UKI setup detected: default_uki=${mainline_uki} (${mainline_preset})"
+
+  lts_uki="$(derive_lts_uki_path "$mainline_uki")"
+  mainline_default_options="$(preset_get_value "$mainline_preset" default_options || true)"
+  mainline_fallback_uki="$(preset_get_value "$mainline_preset" fallback_uki || true)"
+  mainline_fallback_options="$(preset_get_value "$mainline_preset" fallback_options || true)"
+  lts_fallback_uki=""
+  [[ -n $mainline_fallback_uki ]] && lts_fallback_uki="$(derive_lts_uki_path "$mainline_fallback_uki")"
+
+  if [[ -f $lts_preset ]]; then
+    current_uki="$(preset_default_uki_path "$lts_preset")"
+    if [[ $current_uki == "$lts_uki" ]]; then
+      log_ok "linux-lts.preset already configured for UKI (default_uki=${lts_uki})"
+      return 0
+    fi
+    if [[ -n $current_uki ]]; then
+      log_warn "linux-lts.preset declares default_uki=${current_uki}, expected ${lts_uki}; rewriting"
+    else
+      log_warn "linux-lts.preset exists but is not configured for UKI (uses default_image=); rewriting to match mainline's UKI setup"
+    fi
+  else
+    log_warn "linux-lts.preset not found (${lts_preset}); creating it"
+  fi
+
+  tmp="$(mktemp)"
+  trap 'rm -f "$tmp"' RETURN
+  {
+    printf '# mkinitcpio preset file for the '\''linux-lts'\'' package (generated by ensure_linux_lts.sh)\n\n'
+    printf 'ALL_kver="/boot/vmlinuz-linux-lts"\n'
+    grep -E '^ALL_microcode=' "$mainline_preset" 2>/dev/null || true
+    printf '\n'
+    printf "PRESETS=('default' 'fallback')\n\n"
+    printf 'default_uki="%s"\n' "$lts_uki"
+    [[ -n $mainline_default_options ]] && printf 'default_options="%s"\n' "$mainline_default_options"
+    if [[ -n $lts_fallback_uki ]]; then
+      printf '\n'
+      printf 'fallback_uki="%s"\n' "$lts_fallback_uki"
+      [[ -n $mainline_fallback_options ]] && printf 'fallback_options="%s"\n' "$mainline_fallback_options"
+    fi
+  } >"$tmp"
+
+  if $DRY_RUN; then
+    log_info "[dry-run] Would write ${lts_preset}:"
+    sed 's/^/[dry-run]   /' "$tmp"
+    return 0
+  fi
+
+  set_root_owned_file "$lts_preset" "$tmp"
+  CHANGED_PRESET=true
+  log_ok "linux-lts.preset written with default_uki=${lts_uki}"
+
+  # Quick verification: re-read the file back off disk to confirm the write
+  # landed and mkinitcpio will see an uncommented default_uki= line.
+  if preset_get_value "$lts_preset" default_uki >/dev/null 2>&1; then
+    log_ok "Verified: ${lts_preset} now declares default_uki=$(preset_get_value "$lts_preset" default_uki)"
+  else
+    log_error "Verification failed: ${lts_preset} still missing default_uki after write"
+    return 1
+  fi
 }
 
 # verify_lts_kernel_artifact — confirm mkinitcpio actually produced a bootable
@@ -376,6 +521,34 @@ ensure_grub_default_saved_mode() {
   return 0
 }
 
+# verify_systemd_boot_detects_lts UKI_FILE — quick check that systemd-boot's
+# own entry list (`bootctl list`) picked up the linux-lts UKI as a Type #2
+# boot entry. Diagnostic only; a miss here usually means the ESP isn't
+# mounted where systemd-boot expects it, or bootctl needs `bootctl update`.
+verify_systemd_boot_detects_lts() {
+  local uki_file="${1:?uki file required}"
+  local base
+
+  if ! command -v bootctl >/dev/null 2>&1; then
+    log_info "bootctl not available; skipping systemd-boot detection check"
+    return 0
+  fi
+
+  if $DRY_RUN; then
+    log_info "[dry-run] Skipping 'bootctl list' detection check"
+    return 0
+  fi
+
+  base="$(basename "$uki_file")"
+  if as_root bootctl list 2>/dev/null | grep -qi "$base"; then
+    log_ok "systemd-boot detects ${base} (confirmed via 'bootctl list')"
+    return 0
+  fi
+
+  log_warn "systemd-boot did not report ${base} via 'bootctl list'; check that the ESP is mounted at /boot and run 'sudo bootctl list' manually"
+  return 1
+}
+
 configure_systemd_boot_default() {
   local entry uki_path uki_file
 
@@ -392,6 +565,7 @@ configure_systemd_boot_default() {
   if uki_file="$(find_uki_lts_file "$uki_path")"; then
     log_info "systemd-boot: linux-lts is a UKI, using $(basename "$uki_file") as the boot entry"
     set_systemd_boot_default "$(basename "$uki_file")"
+    verify_systemd_boot_detects_lts "$uki_file"
     return 0
   fi
 
@@ -494,14 +668,38 @@ configure_bootloader_defaults() {
 }
 
 rebuild_initramfs_if_needed() {
-  if ! $CHANGED_PACKAGES; then
-    log_info "Skipping initramfs rebuild (no kernel package changes)"
+  local preset_file uki_path artifact_missing=false
+
+  preset_file="$(mkinitcpio_preset_file)"
+  uki_path="$(preset_default_uki_path "$preset_file")"
+  if [[ -n $uki_path ]] && ! find_uki_lts_file "$uki_path" >/dev/null 2>&1; then
+    artifact_missing=true
+  fi
+
+  if ! $CHANGED_PACKAGES && ! $CHANGED_PRESET && ! $artifact_missing; then
+    log_info "Skipping initramfs rebuild (no package/preset changes and linux-lts artifact already present)"
     return 0
   fi
 
-  log_info "Rebuilding initramfs"
+  log_info "Rebuilding initramfs/UKIs for all presets (mkinitcpio -P)"
   as_root mkinitcpio -P
-  log_ok "Initramfs rebuilt"
+  log_ok "Initramfs/UKI rebuild finished"
+
+  # Quick verification: confirm the rebuild actually produced the linux-lts
+  # UKI this run was meant to fix, instead of silently trusting exit code 0.
+  if $DRY_RUN; then
+    log_info "[dry-run] Skipping post-rebuild artifact verification"
+    return 0
+  fi
+
+  if [[ -n $uki_path ]]; then
+    if find_uki_lts_file "$uki_path" >/dev/null 2>&1; then
+      log_ok "Verified: $(find_uki_lts_file "$uki_path") exists after rebuild"
+    else
+      log_error "Verification failed: expected UKI ${uki_path} still missing after rebuild; check 'sudo mkinitcpio -p linux-lts' output for errors"
+      return 1
+    fi
+  fi
 }
 
 print_final_status() {
@@ -514,7 +712,7 @@ print_final_status() {
     log_warn "Running kernel is not linux-lts yet (reboot required)"
   fi
 
-  if $CHANGED_PACKAGES || $CHANGED_BOOTLOADER; then
+  if $CHANGED_PACKAGES || $CHANGED_BOOTLOADER || $CHANGED_PRESET; then
     if $DRY_RUN; then
       log_warn "[dry-run] Changes would be applied. Reboot would be required to start linux-lts"
     else
@@ -539,6 +737,7 @@ main() {
 
   require_cmd awk
   require_cmd basename
+  require_cmd dirname
   require_cmd grep
   require_cmd install
   require_cmd mktemp
@@ -555,7 +754,8 @@ main() {
   fi
 
   ensure_packages
-  rebuild_initramfs_if_needed
+  ensure_lts_preset || artifact_status=1
+  rebuild_initramfs_if_needed || artifact_status=1
 
   verify_lts_kernel_artifact || artifact_status=1
 
