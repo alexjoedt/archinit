@@ -4,7 +4,7 @@ set -euo pipefail
 IFS=$'\n\t'
 
 DRY_RUN=false
-SWAPFILE="/swapfile"
+SWAPFILE="/swap/swapfile"
 CMDLINE_FILE="/etc/kernel/cmdline"
 MKINITCPIO_CONF="/etc/mkinitcpio.conf"
 FSTAB_FILE="/etc/fstab"
@@ -32,7 +32,7 @@ usage() {
   cat <<'EOF'
 Usage: setup_hibernate_swap.sh [options]
 
-Create /swapfile for hibernation at installed RAM plus a 10% buffer, add it to
+Create /swap/swapfile for hibernation at installed RAM plus a 10% buffer, add it to
 /etc/fstab, configure resume=UUID=... resume_offset=... in /etc/kernel/cmdline,
 enable mkinitcpio's resume hook, and rebuild initramfs/UKI artifacts.
 
@@ -180,6 +180,7 @@ preflight() {
 
   require_cmd awk
   require_cmd df
+  require_cmd dirname
   require_cmd findmnt
   require_cmd getconf
   require_cmd grep
@@ -253,12 +254,17 @@ create_extent_swapfile() {
 }
 
 create_swapfile() {
+  local swap_directory
+
   log_info "Creating ${SWAPFILE} on ${ROOT_FSTYPE}"
 
   if $DRY_RUN; then
     log_info "[dry-run] Physical resume offset will be calculated after ${SWAPFILE} is created"
     return 0
   fi
+
+  swap_directory="$(dirname "$SWAPFILE")"
+  as_root install -d -m 755 "$swap_directory"
 
   case "$ROOT_FSTYPE" in
     btrfs)
