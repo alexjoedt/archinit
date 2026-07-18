@@ -10,6 +10,106 @@ _SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ARCHINIT_HOME="${ARCHINIT_HOME:-$(cd "${_SCRIPT_DIR}/.." && pwd)}"
 export ARCHINIT_HOME
 
+DRY_RUN="${DRY_RUN:-0}"
+ASSUME_YES="${ASSUME_YES:-0}"
+VERBOSE="${VERBOSE:-0}"
+QUIET="${QUIET:-0}"
+NO_COLOR="${NO_COLOR:-0}"
+
+# ---
+
+if [[ -t 2 && "$NO_COLOR" -ne 1 ]]; then
+  _C_INFO=$'\033[36m'
+  _C_OK=$'\033[32m'
+  _C_WARN=$'\033[33m'
+  _C_ERROR=$'\033[31m'
+  _C_RESET=$'\033[0m'
+else
+  _C_INFO=""
+  _C_OK=""
+  _C_WARN=""
+  _C_ERROR=""
+  _C_RESET=""
+fi
+
+log_info() { [[ "$QUIET" -eq 1 ]] || printf '%s[INFO]%s %s\n' "$_C_INFO" "$_C_RESET" "$*" >&2; }
+log_ok() { [[ "$QUIET" -eq 1 ]] || printf '%s[ OK ]%s %s\n' "$_C_OK" "$_C_RESET" "$*" >&2; }
+log_warn() { printf '%s[WARN]%s %s\n' "$_C_WARN" "$_C_RESET" "$*" >&2; }
+log_error() { printf '%s[ERR ]%s %s\n' "$_C_ERROR" "$_C_RESET" "$*" >&2; }
+
+die() {
+  log_error "$*"
+  exit 1
+}
+
+require_cmd() {
+  local cmd="${1:?command required}"
+  local msg="${2:-required command not found: ${cmd}}"
+  command -v "$cmd" >/dev/null 2>&1 || die "$msg"
+}
+
+# run <command> [args...]
+# Executes a command, honoring DRY_RUN and VERBOSE.
+run() {
+  if [[ "$VERBOSE" -eq 1 || "$DRY_RUN" -eq 1 ]]; then
+    local IFS=' '
+    log_info "+ $*"
+  fi
+
+  if [[ "$DRY_RUN" -eq 1 ]]; then
+    return 0
+  fi
+
+  "$@"
+}
+
+# ui_choose_multi <prompt> <item...>
+# Prints one selected item per line to stdout.
+ui_choose_multi() {
+  local prompt="$1"
+  shift
+  local -a items=("$@")
+  local -a chosen=()
+  local i reply
+
+  if [[ "$ASSUME_YES" -eq 1 ]]; then
+    printf '%s\n' "${items[@]}"
+    return 0
+  fi
+
+  {
+    printf '%s\n' "$prompt"
+    for i in "${!items[@]}"; do
+      printf '  %2d) %s\n' "$((i + 1))" "${items[$i]}"
+    done
+    printf 'Enter numbers (space/comma separated), "all", or empty to skip: '
+  } >&2
+
+  read -r reply
+
+  reply="${reply//,/ }"
+  if [[ -z "$reply" ]]; then
+    return 0
+  fi
+
+  if [[ "$reply" == "all" ]]; then
+    printf '%s\n' "${items[@]}"
+    return 0
+  fi
+
+  local n
+  for n in $reply; do
+    if [[ "$n" =~ ^[0-9]+$ ]] && ((n >= 1 && n <= ${#items[@]})); then
+      chosen+=("${items[$((n - 1))]}")
+    else
+      log_warn "Ignoring invalid selection: ${n}"
+    fi
+  done
+
+  [[ ${#chosen[@]} -gt 0 ]] && printf '%s\n' "${chosen[@]}"
+  return 0
+}
+
 help() {
   cat <<'EOF'
 Usage: enable_user_services.sh
