@@ -10,15 +10,6 @@ _SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ARCHINIT_HOME="${ARCHINIT_HOME:-$(cd "${_SCRIPT_DIR}/.." && pwd)}"
 export ARCHINIT_HOME
 
-# shellcheck source=/dev/null
-source "${ARCHINIT_HOME}/lib/core.sh"
-# shellcheck source=/dev/null
-source "${ARCHINIT_HOME}/lib/log.sh"
-# shellcheck source=/dev/null
-source "${ARCHINIT_HOME}/lib/ui.sh"
-
-# ---
-
 help() {
   cat <<'EOF'
 Usage: enable_user_services.sh

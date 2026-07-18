@@ -14,15 +14,15 @@ elephant-windows
 walker
 
 # File manager theming
-adwaita-qt
-papirus-folders
+#adwaita-qt
+#papirus-folders
 
 # Icon themes
-tela-icon-theme-git
-tela-circle-icon-theme-git
-yaru-icon-theme
-fluent-icon-theme-git
-nordzy-icon-theme
+#tela-icon-theme-git
+#tela-circle-icon-theme-git
+#yaru-icon-theme
+#fluent-icon-theme-git
+#nordzy-icon-theme
 
-ttf-meslo-nerd-font-powerlevel10k
-ttf-font-awesome-4
+#ttf-meslo-nerd-font-powerlevel10k
+#ttf-font-awesome-4

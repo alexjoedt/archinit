@@ -166,3 +166,6 @@ obsidian
 #quickshell # i currently use AUR package
 
 snap-pac
+restic
+rsync
+bitwarden
