@@ -170,3 +170,4 @@ restic
 rsync
 bitwarden
 git-delta
+just
