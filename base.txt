@@ -171,3 +171,5 @@ rsync
 bitwarden
 git-delta
 just
+ffmpeg
+mpv
