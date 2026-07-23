@@ -1,0 +1,15 @@
+# Allowlist-style context: only what the Dockerfile needs.
+**
+
+!package.json
+!package-lock.json
+!docs/
+!docs/**
+!deploy/
+!deploy/Caddyfile
+
+# Still drop build artifacts inside docs/
+docs/.vitepress/cache
+docs/.vitepress/cache/**
+docs/.vitepress/dist
+docs/.vitepress/dist/**
