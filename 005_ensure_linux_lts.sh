@@ -558,9 +558,10 @@ bootctl_confirms_systemd_boot() {
 }
 
 # verify_systemd_boot_lts_default ENTRY — confirm `bootctl list` reports the
-# exact desired entry as a Type #2 UKI and marks it as the default. Checking
-# only for a filename would miss a system such as one where arch-linux-lts.efi
-# exists but arch-linux.efi remains selected.
+# exact desired entry id and marks it as the default. Works for both BLS
+# Type #1 (loader entries) and Type #2 (UKI). Checking only for a filename
+# would miss a system where arch-linux-lts.efi exists but arch-linux.efi
+# remains selected.
 verify_systemd_boot_lts_default() {
   local entry="${1:?entry required}"
   local bootctl_list
@@ -572,18 +573,14 @@ verify_systemd_boot_lts_default() {
 
   if awk -v expected="$entry" '
     function matches() {
-      return type_uki && id == expected && is_default
+      return id == expected && is_default
     }
     /^[[:space:]]*$/ {
       if (matches()) {
         found = 1
         exit
       }
-      type_uki = id = is_default = 0
-      next
-    }
-    /^[[:space:]]*type:[[:space:]]+Boot Loader Specification Type #2/ {
-      type_uki = 1
+      id = is_default = 0
       next
     }
     /^[[:space:]]*title:/ && /\(default\)/ {
@@ -601,11 +598,11 @@ verify_systemd_boot_lts_default() {
       exit !found
     }
   ' <<<"$bootctl_list"; then
-    log_ok "systemd-boot confirms ${entry} is the default Type #2 UKI"
+    log_ok "systemd-boot confirms ${entry} is the default boot entry"
     return 0
   fi
 
-  log_warn "bootctl did not report ${entry} as the default Type #2 UKI; inspect 'sudo bootctl --no-pager list' and /boot/loader/loader.conf"
+  log_warn "bootctl did not report ${entry} as the default boot entry; inspect 'sudo bootctl --no-pager list' and /boot/loader/loader.conf"
   return 1
 }
 
@@ -695,16 +692,14 @@ configure_bootloader_defaults() {
     return 0
   fi
 
+  # Mutual exclusion: prefer the active bootloader. Do not touch GRUB on a
+  # systemd-boot host even if leftover grub-* tools are installed.
   if bootctl_confirms_systemd_boot; then
     found=true
     if configure_systemd_boot_default; then
       ok=true
     fi
-  elif command -v bootctl >/dev/null 2>&1; then
-    log_warn "bootctl is available but did not confirm systemd-boot; skipping systemd-boot configuration"
-  fi
-
-  if command -v grub-set-default >/dev/null 2>&1 || command -v grub-mkconfig >/dev/null 2>&1; then
+  elif command -v grub-set-default >/dev/null 2>&1 || command -v grub-mkconfig >/dev/null 2>&1; then
     found=true
     if command -v grub-set-default >/dev/null 2>&1 && command -v grub-mkconfig >/dev/null 2>&1; then
       if configure_grub_default; then
@@ -713,6 +708,8 @@ configure_bootloader_defaults() {
     else
       log_warn "GRUB detected but required commands are missing (need grub-set-default and grub-mkconfig)"
     fi
+  elif command -v bootctl >/dev/null 2>&1; then
+    log_warn "bootctl is available but did not confirm systemd-boot; skipping bootloader configuration"
   fi
 
   if ! $found; then
