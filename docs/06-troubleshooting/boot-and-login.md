@@ -31,23 +31,44 @@ Restore LTS default later with `./005_ensure_linux_lts.sh`.
 - btrfs root corruption → do not write-balance blindly; boot ISO, scrub,
   restore from backup/snapper
 
+## Greeter black screen (greetd / ReGreet)
+
+If `greetd` is enabled but you never reach a usable UI:
+
+1. `Ctrl+Alt+F3` → log in on TTY
+2. Inspect and fall back if needed:
+
+```bash
+systemctl status greetd.service
+journalctl -u greetd -b --no-pager | tail -80
+# temporary rollback to previous DM:
+sudo systemctl disable greetd.service
+sudo systemctl enable sddm.service   # or your previous DM
+sudo reboot
+```
+
+Usual causes: wallpaper path not readable by user `greeter`, bad
+`/etc/greetd/config.toml` or `regreet.toml`. Full setup:
+[greetd](../03-session/greetd.md).
+
 ## Login works on TTY but not Hyprland
 
 ```bash
 # as your user on TTY
 echo "$XDG_SESSION_TYPE"
 Hyprland
-# or whatever start path you use (uwsm, start-hyprland, greetd session)
+# or pick Hyprland again from greetd after fixing the greeter
 ```
 
 Logs:
 
 ```bash
 journalctl --user -b --no-pager | rg -i 'hypr|wayland|gpu'
+journalctl -u greetd -b --no-pager | tail -40
 ls "$XDG_RUNTIME_DIR"
 ```
 
-See [Hyprland troubleshooting](hyprland.md).
+See [Hyprland troubleshooting](hyprland.md) and [greetd](../03-session/greetd.md).
 
 ## After a bad pacman upgrade
 

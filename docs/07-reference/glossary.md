@@ -7,10 +7,21 @@ Short definitions as used in this wiki.
 Arch User Repository. Community PKGBUILDs built locally (via yay). Not
 official staff-supported packages.
 
+## cage
+
+Tiny Wayland compositor used only to host a single fullscreen client. On this
+host it runs ReGreet for greetd (`cage -s -- regreet`).
+
 ## ESP
 
 EFI System Partition. FAT filesystem where systemd-boot and UKIs usually
 live. `bootctl status` shows the path.
+
+## greetd
+
+Minimal login daemon (display manager). Starts a greeter session; after auth
+it launches the chosen Wayland/X11 session from
+`/usr/share/wayland-sessions/` or `/usr/share/xsessions/`.
 
 ## hibernate vs suspend
 
@@ -36,6 +47,11 @@ Alternate idle/config tree rejected by this host's baseline. If
 ## pacman / yay
 
 pacman manages official packages. yay wraps pacman and builds AUR packages.
+
+## ReGreet
+
+GTK4 greeter for greetd (`greetd-regreet`). Config:
+`/etc/greetd/regreet.toml`. Runs as system user `greeter`.
 
 ## resume / resume_offset
 

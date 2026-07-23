@@ -27,8 +27,8 @@ features:
     link: /02-storage/btrfs
     linkText: Storage guide
   - title: Session
-    details: loginctl, Hyprland, hypridle/hyprlock — lid ignored so idle owns sleep.
-    link: /03-session/hyprland
+    details: greetd/ReGreet, loginctl, Hyprland, hypridle/hyprlock — lid ignored so idle owns sleep.
+    link: /03-session/greetd
     linkText: Session guide
   - title: Desktop
     details: PipeWire, NetworkManager, Bluetooth, portals and grim/slurp screenshots.

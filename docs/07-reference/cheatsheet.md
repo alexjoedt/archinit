@@ -34,6 +34,9 @@ systemctl list-timers --all
 loginctl
 loginctl lock-session
 systemd-inhibit --list
+systemctl status greetd
+journalctl -u greetd -b
+ls /usr/share/wayland-sessions/
 ```
 
 ## Hyprland

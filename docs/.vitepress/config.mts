@@ -69,6 +69,7 @@ export default defineConfig({
         collapsed: false,
         items: [
           { text: 'loginctl', link: '/03-session/loginctl' },
+          { text: 'greetd + ReGreet', link: '/03-session/greetd' },
           { text: 'Hyprland', link: '/03-session/hyprland' },
           { text: 'Idle, lock, sleep', link: '/03-session/idle-lock-sleep' },
         ],

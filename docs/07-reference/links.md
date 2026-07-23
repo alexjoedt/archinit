@@ -28,6 +28,13 @@ Upstream references. Prefer these when this wiki is thin.
 - [Improve boot performance](https://wiki.archlinux.org/title/Improving_performance) —
   only when needed
 
+## Display manager / greeter
+
+- [greetd](https://wiki.archlinux.org/title/Greetd)
+- [ReGreet](https://github.com/rharish101/ReGreet)
+- [cage](https://github.com/Hjdskes/cage)
+- Local procedure: [greetd + ReGreet](../03-session/greetd.md)
+
 ## Hyprland
 
 - [Hyprland wiki](https://wiki.hyprland.org/)

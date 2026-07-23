@@ -59,8 +59,9 @@ hyprctl -j clients | jq '.[].class'
 | Kill and relaunch Hyprland from TTY/display manager | Broken socket, GPU reset, hard fail loop |
 | Full logout / reboot | Input groups changed, NVIDIA driver updated, session corruption |
 
-`dispatch exit` ends the compositor; know how you start Hyprland again (UWSM,
-greetd, SDDM, tty + `Hyprland`, etc.).
+`dispatch exit` ends the compositor; know how you start Hyprland again —
+preferred path on this wiki is [greetd + ReGreet](greetd.md) (else UWSM, SDDM,
+or TTY + `Hyprland`).
 
 ## Screenshots and clipboard
 

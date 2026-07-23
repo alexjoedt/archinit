@@ -79,6 +79,7 @@ exact btrfs subvolume layout, primary user.
 ### 03 — Session
 
 - [loginctl](/03-session/loginctl)
+- [greetd + ReGreet](/03-session/greetd)
 - [Hyprland](/03-session/hyprland)
 - [idle, lock, sleep](/03-session/idle-lock-sleep)
 
@@ -128,6 +129,6 @@ or a password manager).
 - Exact btrfs subvolume map (`@`, `@home`, snapshot mount opts)
 - ESP mount path and systemd-boot entry names
 - GPU model and hybrid scheme (iGPU/dGPU, offload tool if any)
-- How Hyprland is started (TTY, greetd, SDDM, uwsm, …)
+- How Hyprland is started (documented path: [greetd](/03-session/greetd); note if you still use TTY/uwsm/SDDM)
 - restic repository location and exclude list (no passwords here)
 - Any persistent CIFS/NFS units already in `/etc/fstab`
