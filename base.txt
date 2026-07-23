@@ -173,3 +173,6 @@ git-delta
 just
 ffmpeg
 mpv
+docker
+docker-compose
+docker-buildx

@@ -4,6 +4,9 @@
 
 FROM node:22-alpine AS build
 
+# vitepress lastUpdated shells out to git
+RUN apk add --no-cache git
+
 WORKDIR /app
 
 COPY package.json package-lock.json ./
