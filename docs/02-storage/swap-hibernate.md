@@ -31,8 +31,8 @@ already exists. Read the script before re-running on a half-configured machine.
 
 ```bash
 cd /path/to/archinit
-./setup_hibernate_swap.sh --dry-run
-./setup_hibernate_swap.sh
+./006_setup_hibernate_swap.sh --dry-run
+./006_setup_hibernate_swap.sh
 ```
 
 It will:
@@ -112,5 +112,5 @@ On hybrid NVIDIA systems, fix DRM/services first
 Also run:
 
 ```bash
-./healthz.sh
+./008_healthz.sh
 ```

@@ -2,7 +2,7 @@
 
 Manage services, timers, and logs. This host uses **system** units for logind,
 NetworkManager, bluetooth, snapper timers, and **user** units under
-`~/.config/systemd/user/` (enable via `enable_user_services.sh`).
+`~/.config/systemd/user/` (enable via `007_enable_user_services.sh`).
 
 ## System vs user
 
@@ -88,8 +88,8 @@ Lid keys must be `ignore` on this laptop so hypridle owns sleep. Details:
 
 ```bash
 cd /path/to/archinit
-./enable_user_services.sh
-# DRY_RUN=1 ASSUME_YES=1 ./enable_user_services.sh
+./007_enable_user_services.sh
+# DRY_RUN=1 ASSUME_YES=1 ./007_enable_user_services.sh
 ```
 
 ## If it fails

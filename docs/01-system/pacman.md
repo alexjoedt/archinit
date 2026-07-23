@@ -3,7 +3,7 @@
 Install, update, and query official packages. For AUR, use [yay](yay-aur.md).
 
 archinit installs the official set from `base.txt` via
-`install_packages.sh` in the repo root.
+`001_install_packages.sh` in the repo root.
 
 ## Update mirrors and system
 
@@ -25,13 +25,13 @@ sudo pacman -S --needed package another   # skip if already up to date
 sudo pacman -Rns package                  # remove package + unused deps
 ```
 
-`--needed` is what `install_packages.sh` uses.
+`--needed` is what `001_install_packages.sh` uses.
 
 Install everything listed in the repo:
 
 ```bash
 cd /path/to/archinit
-./install_packages.sh
+./001_install_packages.sh
 ```
 
 ## Query packages

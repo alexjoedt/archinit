@@ -42,10 +42,10 @@ From archinit root:
 | Doc / script | Role |
 |--------------|------|
 | `wiki.md` | Generator prompt for this tree |
-| `healthz.md` / `healthz.sh` | Baseline audit |
-| `setup_hibernate_swap.sh` | Hibernate swapfile automation |
-| `ensure_linux_lts.sh` | LTS default + UKI preset |
-| `nvidia_idle_check.sh` | NVIDIA suspend/DPMS checklist |
+| `healthz.md` / `008_healthz.sh` | Baseline audit |
+| `006_setup_hibernate_swap.sh` | Hibernate swapfile automation |
+| `005_ensure_linux_lts.sh` | LTS default + UKI preset |
+| `009_nvidia_idle_check.sh` | NVIDIA suspend/DPMS checklist |
 | `base.txt` / `aur.txt` | Desired package set |
 
 ## When to extend this wiki

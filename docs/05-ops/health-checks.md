@@ -3,13 +3,13 @@
 Read-only audits for this laptop. They exist so you do not discover baseline
 drift only after suspend fails on a train.
 
-## healthz.sh (primary)
+## 008_healthz.sh (primary)
 
-Spec: `healthz.md` in the repo root. Script: `healthz.sh`.
+Spec: `healthz.md` in the repo root. Script: `008_healthz.sh`.
 
 ```bash
 cd /path/to/archinit
-./healthz.sh
+./008_healthz.sh
 echo $?
 ```
 
@@ -37,12 +37,12 @@ Use after:
 - Kernel / NVIDIA / sleep stack changes
 - Weekly if you want a modest drumbeat
 
-## nvidia_idle_check.sh
+## 009_nvidia_idle_check.sh
 
 German-labelled console diagnostics for Hyprland + NVIDIA DPMS/suspend:
 
 ```bash
-./nvidia_idle_check.sh
+./009_nvidia_idle_check.sh
 ```
 
 Covers:

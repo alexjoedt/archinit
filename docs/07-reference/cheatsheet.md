@@ -13,8 +13,8 @@ pacman -Ql pkg
 pacman -Qdt
 yay -Syu
 pacman -Qm
-./install_packages.sh
-./install_aur.sh
+./001_install_packages.sh
+./002_install_aur.sh
 ```
 
 ## systemd / logs
@@ -57,7 +57,7 @@ sudo snapper -c root create -d 'note'
 swapon --show
 ls -lh /swap/swapfile
 cat /proc/cmdline
-./setup_hibernate_swap.sh --dry-run
+./006_setup_hibernate_swap.sh --dry-run
 ```
 
 ## Network / audio / BT
@@ -78,7 +78,7 @@ bootctl status
 bootctl list
 uname -r
 sudo mkinitcpio -P
-./ensure_linux_lts.sh --dry-run
+./005_ensure_linux_lts.sh --dry-run
 ```
 
 ## Screenshots / clipboard
@@ -92,8 +92,8 @@ wl-paste
 ## Health
 
 ```bash
-./healthz.sh
-./nvidia_idle_check.sh
+./008_healthz.sh
+./009_nvidia_idle_check.sh
 ```
 
 ## CIFS

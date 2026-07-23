@@ -23,7 +23,7 @@ from AUR is the default documentation.
 
 ```bash
 cd /path/to/archinit
-./install_aur.sh
+./002_install_aur.sh
 ```
 
 The script lists packages from `aur.txt`, prompts for numbers/ranges, and runs
@@ -74,4 +74,4 @@ repo lists `wezterm-git` and walker/elephant stack in `aur.txt`).
   do not blindly `--skippgpcheck` as habit
 - Build breaks after `-Syu` → rebuild AUR packages (`yay -S package` or
   `yay -Syu` again) once official libs moved
-- No helper found → `install_aur.sh` dies until yay/paru exists
+- No helper found → `002_install_aur.sh` dies until yay/paru exists

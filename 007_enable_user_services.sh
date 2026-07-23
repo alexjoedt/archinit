@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# scripts/enable_user_services.sh
+# scripts/007_enable_user_services.sh
 
 set -euo pipefail
 IFS=$'\n\t'
@@ -112,7 +112,7 @@ ui_choose_multi() {
 
 help() {
   cat <<'EOF'
-Usage: enable_user_services.sh
+Usage: 007_enable_user_services.sh
 
 Lists all user service units found in:
   - ~/.config/systemd

@@ -76,7 +76,7 @@ sudo timedatectl set-timezone Europe/Berlin   # example
 
 ## Shell
 
-zsh is the intended interactive shell (`ensure_zsh.sh`).
+zsh is the intended interactive shell (`003_ensure_zsh.sh`).
 
 ```bash
 echo "$SHELL"

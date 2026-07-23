@@ -22,7 +22,7 @@ systemctl --failed
 2. Boot an alternate UKI (mainline vs LTS, older generation if kept)
 3. If only one entry fails with NVIDIA, try the other kernel once
 
-Restore LTS default later with `./ensure_linux_lts.sh`.
+Restore LTS default later with `./005_ensure_linux_lts.sh`.
 
 ## Busy emergency or failed mount
 

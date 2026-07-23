@@ -8,7 +8,7 @@ checklist.
 
 ```bash
 cd /path/to/archinit
-./nvidia_idle_check.sh
+./009_nvidia_idle_check.sh
 ```
 
 Collect:
@@ -68,7 +68,7 @@ Confirm which still apply for your driver series before copying old blogs.
 
 ## Black screen after wake
 
-1. Pass `nvidia_idle_check.sh`
+1. Pass `009_nvidia_idle_check.sh`
 2. Confirm preserve memory option
 3. Confirm three nvidia-* services
 4. hypridle on-resume dpms

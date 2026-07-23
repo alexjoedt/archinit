@@ -13,7 +13,7 @@ not get double-suspend or fights between two policies.
 | logind | `/etc/systemd/logind.conf` and `logind.conf.d/*.conf` | lid → **ignore** |
 
 Reject conflicting stacks. Presence of `~/.config/noctialia/` is treated as a
-**FAIL** by `healthz.sh`. Prefer not running `swayidle` in parallel.
+**FAIL** by `008_healthz.sh`. Prefer not running `swayidle` in parallel.
 
 ## Verify packages and configs
 
@@ -79,7 +79,7 @@ systemctl hibernate    # only if [swap-hibernate](../02-storage/swap-hibernate.m
 
 ```bash
 systemd-inhibit --list
-./healthz.sh
+./008_healthz.sh
 # from repo root
 ```
 
@@ -94,7 +94,7 @@ Suspend/resume black screens often need:
 - `NVreg_PreserveVideoMemoryAllocations=1`
 - `nvidia-suspend.service`, `nvidia-hibernate.service`, `nvidia-resume.service` enabled
 
-Run `./nvidia_idle_check.sh` from the repo. Full page:
+Run `./009_nvidia_idle_check.sh` from the repo. Full page:
 [NVIDIA](../06-troubleshooting/nvidia.md).
 
 ## If it fails

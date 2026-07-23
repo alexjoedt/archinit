@@ -20,12 +20,12 @@ HYPRLOCK_CONF="${HOME}/.config/hypr/hyprlock.conf"
 NOCTIALIA_DIR="${HOME}/.config/noctialia"
 SNAPPER_ROOT_CONFIG="/etc/snapper/configs/root"
 
-# Buffer used by setup_hibernate_swap.sh (RAM + 10%).
+# Buffer used by 006_setup_hibernate_swap.sh (RAM + 10%).
 BUFFER_PERCENT=10
 
 usage() {
   cat <<'EOF'
-Usage: healthz.sh
+Usage: 008_healthz.sh
 
 Read-only health check for an Arch Linux + Hyprland laptop baseline.
 Prints PASS / WARN / FAIL lines and exits:

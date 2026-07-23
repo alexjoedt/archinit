@@ -16,7 +16,7 @@ pgrep -a hypridle
 test -f ~/.config/hypr/hypridle.conf && rg -n 'listener|timeout|on-timeout|on-resume' ~/.config/hypr/hypridle.conf
 swapon --show
 cat /proc/cmdline | tr ' ' '\n' | rg 'resume'
-./healthz.sh
+./008_healthz.sh
 ```
 
 ## Lid suspends immediately / twice
@@ -81,8 +81,8 @@ hyprlock
 Capture:
 
 ```bash
-./healthz.sh
-./nvidia_idle_check.sh
+./008_healthz.sh
+./009_nvidia_idle_check.sh
 systemd-inhibit --list
 journalctl -b -p warning --no-pager | tail -100
 ```

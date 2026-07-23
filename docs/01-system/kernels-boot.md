@@ -1,7 +1,7 @@
 # Kernels and boot
 
 Prefer **linux-lts** as the default boot target. archinit manages this with
-`ensure_linux_lts.sh` and expects **systemd-boot** with **UKI** (unified kernel
+`005_ensure_linux_lts.sh` and expects **systemd-boot** with **UKI** (unified kernel
 image) style presets when those files exist.
 
 ## Inspect current boot
@@ -26,10 +26,10 @@ ls /usr/lib/modules
 From the archinit repo:
 
 ```bash
-./ensure_linux_lts.sh --dry-run
-./ensure_linux_lts.sh
+./005_ensure_linux_lts.sh --dry-run
+./005_ensure_linux_lts.sh
 # fully non-interactive hint suppression:
-./ensure_linux_lts.sh --yes
+./005_ensure_linux_lts.sh --yes
 ```
 
 What it aims to do:
@@ -65,7 +65,7 @@ style). After edits:
 
 ```bash
 sudo mkinitcpio -P
-# or the rebuild path ensure_linux_lts / setup_hibernate_swap uses
+# or the rebuild path 005_ensure_linux_lts / 006_setup_hibernate_swap uses
 ```
 
 NVIDIA Wayland-related parameters (when on NVIDIA) often include:
@@ -73,7 +73,7 @@ NVIDIA Wayland-related parameters (when on NVIDIA) often include:
 - `nvidia_drm.modeset=1`
 - `nvidia_drm.fbdev=1`
 
-Confirm with `nvidia_idle_check.sh` and [NVIDIA troubleshooting](../06-troubleshooting/nvidia.md).
+Confirm with `009_nvidia_idle_check.sh` and [NVIDIA troubleshooting](../06-troubleshooting/nvidia.md).
 
 ## Fallback entries
 
@@ -95,7 +95,7 @@ ESP path varies; trust `bootctl status`.
 
 ## If it fails
 
-- Boots wrong kernel → `bootctl list` and set default; re-run `ensure_linux_lts.sh`
+- Boots wrong kernel → `bootctl list` and set default; re-run `005_ensure_linux_lts.sh`
 - Emergency shell / failed UKI → ISO recovery
   ([boot-and-login](../06-troubleshooting/boot-and-login.md))
 - Resume from hibernate broken → verify cmdline after kernel package updates

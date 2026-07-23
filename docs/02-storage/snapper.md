@@ -72,7 +72,7 @@ read-only snapshot. High-level:
 3. Follow Arch Wiki **Snapper** + **Snapper#Restoring** for your layout, or use
    the distribution's snapper-gui/brtl helpers if installed
 4. Rebuild initramfs/UKI if kernel/initram packages were involved
-5. Reboot and run `healthz.sh`
+5. Reboot and run `008_healthz.sh`
 
 <!-- prettier-ignore -->
 > [!WARNING]

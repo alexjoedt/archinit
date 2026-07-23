@@ -10,7 +10,7 @@ df -hT /
 free -h
 sudo snapper -c root list | tail
 checkupdates 2>/dev/null || pacman -Qu
-./healthz.sh   # from archinit; note WARN/FAIL baseline
+./008_healthz.sh   # from archinit; note WARN/FAIL baseline
 ```
 
 Postpone bulk upgrades if disk is nearly full or healthz already FAIL on
@@ -44,7 +44,7 @@ changed:
 bootctl status
 cat /proc/cmdline
 # LTS default hygiene when needed:
-./ensure_linux_lts.sh --dry-run
+./005_ensure_linux_lts.sh --dry-run
 sudo mkinitcpio -P   # if not already triggered by pacman hooks
 ```
 
@@ -58,7 +58,7 @@ systemctl reboot
 
 ```bash
 uname -r
-./healthz.sh
+./008_healthz.sh
 systemctl --failed
 systemctl --user --failed
 wpctl status | head
@@ -68,7 +68,7 @@ nmcli general status
 Optional NVIDIA:
 
 ```bash
-./nvidia_idle_check.sh
+./009_nvidia_idle_check.sh
 ```
 
 ## 6. When something is wrong after reboot

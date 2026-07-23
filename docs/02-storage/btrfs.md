@@ -64,7 +64,7 @@ Prefer `snapper cleanup` and deleting junk before aggressive balance.
 Hibernate swap lives at **`/swap/swapfile`**. Prefer a location that is **not**
 bundled into root snapshots in a painful way (archinit uses the `/swap/`
 prefix for that reason). Create only via
-[swap-hibernate](swap-hibernate.md) / `setup_hibernate_swap.sh`, not random
+[swap-hibernate](swap-hibernate.md) / `006_setup_hibernate_swap.sh`, not random
 `fallocate` on btrfs without `mkswapfile`.
 
 ## What not to do

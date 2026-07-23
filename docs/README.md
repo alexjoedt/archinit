@@ -19,7 +19,7 @@ upstream docs for deep theory.
 |------|--------|
 | Distro | Arch Linux |
 | Desktop | Hyprland (Wayland) |
-| Preferred kernel | `linux-lts` (via `ensure_linux_lts.sh`) |
+| Preferred kernel | `linux-lts` (via `005_ensure_linux_lts.sh`) |
 | Root filesystem | btrfs |
 | Snapshots | snapper + snap-pac on root |
 | Hibernate swap | `/swap/swapfile` (RAM + ~10% buffer) |
@@ -30,7 +30,7 @@ upstream docs for deep theory.
 | AUR helper | yay (paru accepted by install scripts) |
 | Package lists | `base.txt`, `aur.txt` in repo root |
 | Boot / UKI | systemd-boot + UKI assumed by archinit scripts |
-| GPU notes | NVIDIA checks via `nvidia_idle_check.sh` when applicable |
+| GPU notes | NVIDIA checks via `009_nvidia_idle_check.sh` when applicable |
 
 Fill in host-local blanks when you know them: hostname, disk device names,
 exact btrfs subvolume layout, primary user.
@@ -38,26 +38,26 @@ exact btrfs subvolume layout, primary user.
 ## Baseline "done" checklist
 
 1. Official packages from `base.txt`; selected AUR from `aur.txt`
-2. zsh as login shell (`ensure_zsh.sh`)
-3. `linux-lts` default boot entry (`ensure_linux_lts.sh`)
-4. Hibernate swap + resume wiring (`setup_hibernate_swap.sh`)
-5. User units enabled (`enable_user_services.sh`)
+2. zsh as login shell (`003_ensure_zsh.sh`)
+3. `linux-lts` default boot entry (`005_ensure_linux_lts.sh`)
+4. Hibernate swap + resume wiring (`006_setup_hibernate_swap.sh`)
+5. User units enabled (`007_enable_user_services.sh`)
 6. logind lid = ignore; hypridle/hyprlock configs present
-7. `./healthz.sh` exits `0`
+7. `./008_healthz.sh` exits `0`
 
 ## archinit scripts map
 
 | Script | Concern |
 |--------|---------|
-| `install_packages.sh` | Install official packages from `base.txt` |
-| `install_aur.sh` | Interactive AUR install from `aur.txt` |
-| `ensure_zsh.sh` | zsh as default shell |
-| `configure_git.sh` | Global git identity |
-| `ensure_linux_lts.sh` | Install/default LTS + UKI preset hygiene |
-| `setup_hibernate_swap.sh` | `/swap/swapfile`, fstab, resume, mkinitcpio |
-| `enable_user_services.sh` | Enable units under `~/.config/systemd` |
-| `healthz.sh` | Read-only baseline audit (see `healthz.md`) |
-| `nvidia_idle_check.sh` | NVIDIA DRM / VRAM preserve / suspend services |
+| `001_install_packages.sh` | Install official packages from `base.txt` |
+| `002_install_aur.sh` | Interactive AUR install from `aur.txt` |
+| `003_ensure_zsh.sh` | zsh as default shell |
+| `004_configure_git.sh` | Global git identity |
+| `005_ensure_linux_lts.sh` | Install/default LTS + UKI preset hygiene |
+| `006_setup_hibernate_swap.sh` | `/swap/swapfile`, fstab, resume, mkinitcpio |
+| `007_enable_user_services.sh` | Enable units under `~/.config/systemd` |
+| `008_healthz.sh` | Read-only baseline audit (see `healthz.md`) |
+| `009_nvidia_idle_check.sh` | NVIDIA DRM / VRAM preserve / suspend services |
 
 ## Wiki map
 

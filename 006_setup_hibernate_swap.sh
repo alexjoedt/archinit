@@ -30,7 +30,7 @@ die() {
 
 usage() {
   cat <<'EOF'
-Usage: setup_hibernate_swap.sh [options]
+Usage: 006_setup_hibernate_swap.sh [options]
 
 Create /swap/swapfile for hibernation at installed RAM plus a 10% buffer, add it to
 /etc/fstab, configure resume=UUID=... resume_offset=... in /etc/kernel/cmdline,
