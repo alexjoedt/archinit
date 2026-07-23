@@ -44,7 +44,7 @@ export default defineConfig({
         ],
       },
       {
-        text: '01 — System',
+        text: '01 - System',
         collapsed: false,
         items: [
           { text: 'Overview', link: '/01-system/overview' },
@@ -55,7 +55,7 @@ export default defineConfig({
         ],
       },
       {
-        text: '02 — Storage',
+        text: '02 - Storage',
         collapsed: false,
         items: [
           { text: 'btrfs', link: '/02-storage/btrfs' },
@@ -65,7 +65,7 @@ export default defineConfig({
         ],
       },
       {
-        text: '03 — Session',
+        text: '03 - Session',
         collapsed: false,
         items: [
           { text: 'loginctl', link: '/03-session/loginctl' },
@@ -74,7 +74,7 @@ export default defineConfig({
         ],
       },
       {
-        text: '04 — Desktop',
+        text: '04 - Desktop',
         collapsed: false,
         items: [
           { text: 'PipeWire', link: '/04-desktop/audio-pipewire' },
@@ -84,7 +84,7 @@ export default defineConfig({
         ],
       },
       {
-        text: '05 — Ops',
+        text: '05 - Ops',
         collapsed: false,
         items: [
           { text: 'Safe updates', link: '/05-ops/updates' },
@@ -93,7 +93,7 @@ export default defineConfig({
         ],
       },
       {
-        text: '06 — Troubleshooting',
+        text: '06 - Troubleshooting',
         collapsed: false,
         items: [
           { text: 'Boot and login', link: '/06-troubleshooting/boot-and-login' },
@@ -104,7 +104,7 @@ export default defineConfig({
         ],
       },
       {
-        text: '07 — Reference',
+        text: '07 - Reference',
         collapsed: false,
         items: [
           { text: 'Cheatsheet', link: '/07-reference/cheatsheet' },
