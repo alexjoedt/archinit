@@ -1,4 +1,13 @@
+---
+title: Overview
+description: Machine facts, baseline checklist, script map, and wiki map for this Arch + Hyprland laptop.
+outline: deep
+---
+
 # Personal Arch + Hyprland wiki
+
+Operations notes for this laptop. Use them after a break, bad update, or
+migration so you do not re-discover host decisions.
 
 This is not a substitute for the
 [Arch Wiki](https://wiki.archlinux.org/). Prefer short procedures and point at
@@ -54,58 +63,58 @@ exact btrfs subvolume layout, primary user.
 
 ### 01 — System
 
-- [overview](01-system/overview.md) — layout, users/groups, time
-- [pacman](01-system/pacman.md) — packages, query, cache
-- [yay / AUR](01-system/yay-aur.md) — helper install and hygiene
-- [systemd](01-system/systemd.md) — units, timers, journal
-- [kernels and boot](01-system/kernels-boot.md) — LTS, UKI, mkinitcpio
+- [overview](/01-system/overview) — layout, users/groups, time
+- [pacman](/01-system/pacman) — packages, query, cache
+- [yay / AUR](/01-system/yay-aur) — helper install and hygiene
+- [systemd](/01-system/systemd) — units, timers, journal
+- [kernels and boot](/01-system/kernels-boot) — LTS, UKI, mkinitcpio
 
 ### 02 — Storage
 
-- [btrfs](02-storage/btrfs.md)
-- [snapper](02-storage/snapper.md)
-- [swap and hibernate](02-storage/swap-hibernate.md)
-- [CIFS mounts](02-storage/mounts-cifs.md)
+- [btrfs](/02-storage/btrfs)
+- [snapper](/02-storage/snapper)
+- [swap and hibernate](/02-storage/swap-hibernate)
+- [CIFS mounts](/02-storage/mounts-cifs)
 
 ### 03 — Session
 
-- [loginctl](03-session/loginctl.md)
-- [Hyprland](03-session/hyprland.md)
-- [idle, lock, sleep](03-session/idle-lock-sleep.md)
+- [loginctl](/03-session/loginctl)
+- [Hyprland](/03-session/hyprland)
+- [idle, lock, sleep](/03-session/idle-lock-sleep)
 
 ### 04 — Desktop
 
-- [PipeWire](04-desktop/audio-pipewire.md)
-- [NetworkManager](04-desktop/network-nmcli.md)
-- [Bluetooth](04-desktop/bluetooth.md)
-- [portals and screenshots](04-desktop/portals-screenshare.md)
+- [PipeWire](/04-desktop/audio-pipewire)
+- [NetworkManager](/04-desktop/network-nmcli)
+- [Bluetooth](/04-desktop/bluetooth)
+- [portals and screenshots](/04-desktop/portals-screenshare)
 
 ### 05 — Ops
 
-- [safe updates](05-ops/updates.md)
-- [backups](05-ops/backups.md)
-- [health checks](05-ops/health-checks.md)
+- [safe updates](/05-ops/updates)
+- [backups](/05-ops/backups)
+- [health checks](/05-ops/health-checks)
 
 ### 06 — Troubleshooting
 
-- [boot and login](06-troubleshooting/boot-and-login.md)
-- [Hyprland](06-troubleshooting/hyprland.md)
-- [logind and sleep](06-troubleshooting/logind-sleep.md)
-- [network and audio](06-troubleshooting/network-audio.md)
-- [NVIDIA](06-troubleshooting/nvidia.md)
+- [boot and login](/06-troubleshooting/boot-and-login)
+- [Hyprland](/06-troubleshooting/hyprland)
+- [logind and sleep](/06-troubleshooting/logind-sleep)
+- [network and audio](/06-troubleshooting/network-audio)
+- [NVIDIA](/06-troubleshooting/nvidia)
 
 ### 07 — Reference
 
-- [cheatsheet](07-reference/cheatsheet.md)
-- [glossary](07-reference/glossary.md)
-- [links](07-reference/links.md)
+- [cheatsheet](/07-reference/cheatsheet)
+- [glossary](/07-reference/glossary)
+- [links](/07-reference/links)
 
 ## Recovery order of preference
 
 1. Boot last known good kernel / fallback UKI
-2. Roll back with snapper (read [snapper](02-storage/snapper.md) first)
-3. Arch ISO → mount btrfs → `arch-chroot` (see [boot and login](06-troubleshooting/boot-and-login.md))
-4. Restore from restic/rsync only for home data (see [backups](05-ops/backups.md))
+2. Roll back with snapper (read [snapper](/02-storage/snapper) first)
+3. Arch ISO → mount btrfs → `arch-chroot` (see [boot and login](/06-troubleshooting/boot-and-login))
+4. Restore from restic/rsync only for home data (see [backups](/05-ops/backups))
 
 ## Secrets policy
 

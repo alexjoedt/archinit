@@ -41,7 +41,7 @@ sudo umount -l /mnt/share   # lazy; fix open file handles afterward
 
 ## Persistent fstab
 
-```fstab
+```text
 //server/share  /mnt/share  cifs  credentials=/etc/cred/myshare,uid=1000,gid=1000,file_mode=0640,dir_mode=0750,iocharset=utf8,_netdev,nofail  0  0
 ```
 
