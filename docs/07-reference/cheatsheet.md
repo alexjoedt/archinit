@@ -26,6 +26,8 @@ systemctl --user status
 journalctl -b -p err
 journalctl -u UNIT -b
 systemctl list-timers --all
+systemctl list-timers --user --all
+systemd-analyze calendar '*-*-* 03:30:00'
 ```
 
 ## Sessions

@@ -40,16 +40,14 @@ systemctl --user --failed
 
 ## Timers (prefer over cron here)
 
+Full guide: [systemd timers](systemd-timers.md) (vs cron, calendar syntax,
+create system/user pairs).
+
 ```bash
 systemctl list-timers --all
 systemctl list-timers --user --all
 systemctl status snapper-timeline.timer
 systemctl status snapper-cleanup.timer
-```
-
-Inspect what a timer triggers:
-
-```bash
 systemctl cat snapper-timeline.timer
 ```
 

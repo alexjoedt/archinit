@@ -67,6 +67,7 @@ exact btrfs subvolume layout, primary user.
 - [pacman](/01-system/pacman) — packages, query, cache
 - [yay / AUR](/01-system/yay-aur) — helper install and hygiene
 - [systemd](/01-system/systemd) — units, timers, journal
+- [systemd timers](/01-system/systemd-timers) — vs cron, calendar, create a pair
 - [kernels and boot](/01-system/kernels-boot) — LTS, UKI, mkinitcpio
 
 ### 02 — Storage

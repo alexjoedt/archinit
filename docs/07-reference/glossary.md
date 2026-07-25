@@ -79,6 +79,11 @@ Userspace tool for btrfs snapshot management and timelines.
 btrfs tree that can be mounted and snapshotted independently (for example
 `@` root vs `@home`).
 
+## timer (systemd)
+
+Unit that starts a matching `.service` on a calendar or monotonic schedule.
+Prefer over cron on this host. See [systemd timers](../01-system/systemd-timers.md).
+
 ## UKI
 
 Unified Kernel Image. Single EFI binary packing kernel + initramfs + cmdline

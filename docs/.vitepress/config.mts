@@ -51,6 +51,7 @@ export default defineConfig({
           { text: 'pacman', link: '/01-system/pacman' },
           { text: 'yay / AUR', link: '/01-system/yay-aur' },
           { text: 'systemd', link: '/01-system/systemd' },
+          { text: 'systemd timers', link: '/01-system/systemd-timers' },
           { text: 'Kernels and boot', link: '/01-system/kernels-boot' },
         ],
       },

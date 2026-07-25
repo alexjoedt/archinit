@@ -9,6 +9,7 @@ Upstream references. Prefer these when this wiki is thin.
 - [pacman](https://wiki.archlinux.org/title/Pacman)
 - [AUR](https://wiki.archlinux.org/title/Arch_User_Repository)
 - [systemd](https://wiki.archlinux.org/title/Systemd)
+- [systemd/Timers](https://wiki.archlinux.org/title/Systemd/Timers)
 - [systemd-logind](https://wiki.archlinux.org/title/Systemd-logind)
 - [btrfs](https://wiki.archlinux.org/title/Btrfs)
 - [Snapper](https://wiki.archlinux.org/title/Snapper)
