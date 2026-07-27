@@ -777,29 +777,63 @@ check_systemd_health() {
 
   if [[ -z $failed_out ]]; then
     report PASS "systemd:failed-units" "no failed systemd units"
+  else
+    local count
+    count="$(printf '%s\n' "$failed_out" | wc -l)"
+    count="${count//[[:space:]]/}"
+
+    report FAIL "systemd:failed-units" "${count} failed unit(s)"
+
+    local i=0 line unit_name
+    while IFS= read -r line; do
+      [[ -z $line ]] && continue
+      i=$(( i + 1 ))
+      if (( i <= 5 )); then
+        unit_name="$(printf '%s' "$line" | awk '{print $1}')"
+        report FAIL "systemd:unit:${unit_name}" "failed: ${line}"
+      fi
+    done <<< "$failed_out"
+
+    if (( count > 5 )); then
+      printf '  %s(+%d more — run: systemctl --failed)%s\n' \
+        "$_C_DIM" "$(( count - 5 ))" "$_C_RESET"
+    fi
+  fi
+
+  # User services declared in ~/.config/systemd/user (skip template @.service units)
+  local user_unit_dir="${HOME}/.config/systemd/user"
+  if [[ ! -d $user_unit_dir ]]; then
+    report WARN "systemd:user-services" "${user_unit_dir} not found; skipped user service check"
     return 0
   fi
 
-  local count
-  count="$(printf '%s\n' "$failed_out" | wc -l)"
-  count="${count//[[:space:]]/}"
+  local -a service_files
+  while IFS= read -r -d '' f; do
+    service_files+=("$f")
+  done < <(find "$user_unit_dir" -maxdepth 1 -name '*.service' ! -name '*@.service' -print0 2>/dev/null)
 
-  report FAIL "systemd:failed-units" "${count} failed unit(s)"
-
-  local i=0 line unit_name
-  while IFS= read -r line; do
-    [[ -z $line ]] && continue
-    i=$(( i + 1 ))
-    if (( i <= 5 )); then
-      unit_name="$(printf '%s' "$line" | awk '{print $1}')"
-      report FAIL "systemd:unit:${unit_name}" "failed: ${line}"
-    fi
-  done <<< "$failed_out"
-
-  if (( count > 5 )); then
-    printf '  %s(+%d more — run: systemctl --failed)%s\n' \
-      "$_C_DIM" "$(( count - 5 ))" "$_C_RESET"
+  if (( ${#service_files[@]} == 0 )); then
+    report WARN "systemd:user-services" "no non-template .service files in ${user_unit_dir}"
+    return 0
   fi
+
+  local f unit active_state
+  for f in "${service_files[@]}"; do
+    unit="$(basename "$f")"
+    active_state="$(systemctl --user is-active "$unit" 2>/dev/null || true)"
+    case "$active_state" in
+      active)
+        report PASS "systemd:user:${unit}" "${unit} is active" ;;
+      activating)
+        report WARN "systemd:user:${unit}" "${unit} is still activating" ;;
+      inactive)
+        report WARN "systemd:user:${unit}" "${unit} is inactive (not started)" ;;
+      failed)
+        report FAIL "systemd:user:${unit}" "${unit} has failed" ;;
+      *)
+        report WARN "systemd:user:${unit}" "${unit} state=${active_state}" ;;
+    esac
+  done
 }
 
 # --- 9. Disk usage -------------------------------------------------------------
