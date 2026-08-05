@@ -178,4 +178,4 @@ docker-compose
 docker-buildx
 openssh
 tree-sitter-cli
-yq
+go-yq
