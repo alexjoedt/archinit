@@ -179,3 +179,4 @@ docker-buildx
 openssh
 tree-sitter-cli
 go-yq
+golangci-lint
