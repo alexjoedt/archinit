@@ -810,7 +810,7 @@ check_systemd_health() {
   local -a service_files
   while IFS= read -r -d '' f; do
     service_files+=("$f")
-  done < <(find "$user_unit_dir" -maxdepth 1 -name '*.service' ! -name '*@.service' -print0 2>/dev/null)
+  done < <(find "$user_unit_dir" -maxdepth 1 \( -name '*.service' -o -name '*.socket' \) ! -name '*@.service' ! -name '*@.socket' -print0 2>/dev/null)
 
   if (( ${#service_files[@]} == 0 )); then
     report WARN "systemd:user-services" "no non-template .service files in ${user_unit_dir}"

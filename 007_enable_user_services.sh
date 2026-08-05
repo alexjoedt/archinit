@@ -142,9 +142,9 @@ collect_units() {
     while IFS= read -r -d '' file; do
       unit="$(basename "$file")"
       # Template units require explicit instance names and are skipped.
-      [[ "$unit" == *@.service ]] && continue
+      [[ "$unit" == *@.service || "$unit" == *@.socket ]] && continue
       seen["$unit"]=1
-    done < <(find "$dir" -type f -name '*.service' -print0)
+    done < <(find "$dir" -type f \( -name '*.service' -o -name '*.socket' \) -print0)
   done
 
   if [[ ${#seen[@]} -eq 0 ]]; then
