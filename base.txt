@@ -177,3 +177,4 @@ docker
 docker-compose
 docker-buildx
 openssh
+tree-sitter-cli
