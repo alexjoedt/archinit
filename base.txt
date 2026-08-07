@@ -188,3 +188,9 @@ wayland-protocols
 hyprutils
 hyprwayland-scanner
 libdrm
+yazi
+ffmpeg
+7zip
+poppler
+resvg
+imagemagick
