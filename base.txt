@@ -70,6 +70,7 @@ pipewire
 libpipewire
 pipewire-pulse
 pipewire-alsa
+pipewire-audio
 wireplumber
 alsa-utils
 libpulse
@@ -180,3 +181,10 @@ openssh
 tree-sitter-cli
 go-yq
 golangci-lint
+hyprland-protocols
+hyprlang
+mesa
+wayland-protocols
+hyprutils
+hyprwayland-scanner
+libdrm
