@@ -194,3 +194,4 @@ ffmpeg
 poppler
 resvg
 imagemagick
+python-pipx
