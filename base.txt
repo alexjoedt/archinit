@@ -124,7 +124,8 @@ cliphist
 pacman-contrib
 desktop-file-utils
 shared-mime-info
-hyprpaper
+# hyprpaper # replaced by awww
+awww
 hyprsunset
 hyprlock
 hypridle
