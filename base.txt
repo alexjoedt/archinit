@@ -196,3 +196,4 @@ poppler
 resvg
 imagemagick
 python-pipx
+alacritty
