@@ -170,7 +170,6 @@ obsidian
 snap-pac
 restic
 rsync
-bitwarden
 git-delta
 just
 ffmpeg
@@ -178,19 +177,16 @@ mpv
 docker
 docker-compose
 docker-buildx
-openssh
 tree-sitter-cli
 go-yq
 golangci-lint
 hyprland-protocols
 hyprlang
 mesa
-wayland-protocols
 hyprutils
 hyprwayland-scanner
 libdrm
 yazi
-ffmpeg
 7zip
 poppler
 resvg
